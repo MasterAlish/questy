@@ -1,0 +1,7 @@
+Django==1.11.6
+Pillow==4.3.0
+# mysql-python==1.2.5
+django-datetime-widget
+django-grappelli
+openpyxl==2.4.8
+uwsgi

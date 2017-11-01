@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load my_filters i18n %}
+
+{% block content %}
+    {% show_navbar 'home' user %}
+    {% show_messages messages %}
+
+    <h4>Django - сайт!</h4>
+    <p>
+        Чтобы узнать про Django подробнее перейдите на сайт <a href="https://tutorial.djangogirls.org/ru/">https://tutorial.djangogirls.org/ru/</a>
+    </p>
+{% endblock %}

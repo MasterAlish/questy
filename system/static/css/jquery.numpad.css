@@ -1,0 +1,78 @@
+.nmpd-wrapper {
+    display: none;
+}
+
+.nmpd-target {
+    cursor: pointer !important;
+}
+
+.nmpd-grid {
+    position: absolute;
+    left: 50px;
+    top: 50px;
+    z-index: 5000;
+    -khtml-user-select: none;
+    padding: 10px;
+    width: initial;
+}
+
+.nmpd-overlay {
+    z-index: 4999;
+}
+
+input.nmpd-display {
+    text-align: right;
+}
+
+.nmpd-grid {
+    background: #e9e9e9;
+    border-radius: 10px;
+}
+
+.nmpd-grid td, .nmpd-grid th {
+    padding: 5px;
+}
+
+.nmpd-grid button {
+    background: #333;
+    color: #FFF;
+    font-weight: bold;
+    border: none;
+    font-size: 17px;
+    border-radius: 3px;
+    width: 40px;
+    height: 40px;
+    box-shadow: -1px 1px 3px #a0a0a0;
+}
+
+.nmpd-grid button.sep, .nmpd-grid button.neg {
+    background: #ffffff;
+    color: #333;
+}
+
+.nmpd-grid button.del, .nmpd-grid button.clear, .nmpd-grid button.cancel, .nmpd-grid button.done {
+    background: #ffffff;
+    color: #333;
+    width: 70px;
+}
+
+input.nmpd-display {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.nmpd-grid tr:last-child td {
+    padding-bottom: 10px;
+}
+
+.nmpd-grid tr:first-child td {
+    padding-top: 10px;
+}
+
+.nmpd-grid td:first-child {
+    padding-left: 10px;
+}
+
+.nmpd-grid td:last-child {
+    padding-right: 10px;
+}

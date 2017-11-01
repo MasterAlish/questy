@@ -1,0 +1,233 @@
+.errorlist > li {
+    color: red;
+}
+
+.messages > li {
+    list-style-type: none;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.messages > li.error {
+    background-color: rgb(255, 214, 214);
+    border: 1px solid rgb(255, 176, 176);
+}
+
+.messages > li.success {
+    background-color: rgb(202, 255, 191);
+    border: 1px solid rgb(137, 255, 152);
+}
+
+.ss-block {
+    position: relative;
+    margin: 1%;
+    padding: 39px 10px 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    float: left;
+    display: inline-block;
+}
+
+.ss-block-after {
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #2f3034;
+    -webkit-border-radius: 4px 0 4px 0;
+    -moz-border-radius: 4px 0 4px 0;
+    border-radius: 4px 0 4px 0;
+}
+
+.ss-block-buttons {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    padding: 3px 7px;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    color: #2f3034;
+    -webkit-border-radius: 0 4px 0 4px;
+    -moz-border-radius: 0 4px 0 4px;
+    border-radius: 0 4px 0 4px;
+}
+
+.delete-icon {
+    content: "❌";
+    color: rgb(83, 0, 0);
+    text-decoration: none;
+}
+
+form {
+    margin-bottom: 0;
+}
+
+.label {
+    font-weight: normal;
+}
+
+p.error {
+    color: red;
+}
+
+.form-as-line p{
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.btn-disabled, .btn-disabled:hover{
+    background: #dfdcdc;
+    color: #b6b6b6;
+    cursor: not-allowed;
+}
+
+.align-left {
+    text-align: left !important;
+}
+
+.align-right {
+    text-align: right !important;;
+}
+
+input.editable{
+    margin-bottom: 0;
+    max-width: 100px;
+    padding: 0 5px 0 0;
+    border: 1px solid #e1e1e1;
+    box-shadow: none;
+    text-align: right;
+}
+
+td.editable{
+    cursor: text;
+}
+
+.btn.btn-input{
+    margin-bottom: 10px;
+}
+
+.errorlist {
+    font-size: 11px;
+    list-style: none;
+    margin: 0;
+}
+
+div.tt-menu {
+    width: 95%;
+    background: #fff;
+    border: 1px solid #EEE;
+    border-radius: 4px;
+    box-shadow: 0 0 5px #DDD;
+    max-width: 250px;
+}
+
+div.tt-dataset.tt-dataset-clients {
+    background: white;
+    border-radius: 4px;
+    padding: 5px;
+    box-shadow: 0 0 2px rgba(159, 159, 159, 0.65);
+}
+
+.tt-suggestion {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.tt-suggestion.tt-cursor {
+    background: rgb(103, 167, 255);
+    border-radius: 3px;
+    color: white;
+}
+
+.tt-highlight {
+    color: #006c63;
+    font-weight: bold;
+}
+
+.fa.danger{
+    color: red;
+}
+
+.fa.success{
+    color: #23ad20;
+}
+
+div.pre{
+    margin: 5px 0;
+    padding: 10px;
+    background: #ededed;
+    border: 1px solid #d1d1d1;
+    border-radius: 6px;
+}
+
+span.helptext{
+    font-size: 12px;
+    color: grey
+}
+
+td.center, th.center {
+    text-align: center;
+}
+
+td.grey, th.grey {
+    background-color: #ededed;
+}
+
+td.yellow, th.yellow {
+    background-color: #fff8d4;
+}
+
+td.light-yellow, th.light-yellow {
+    background-color: #f9ff6a;
+}
+
+td.orange, th.orange {
+    background-color: #ffc7bd;
+}
+
+td.green, th.green {
+    background-color: #66de66;
+}
+
+td.cyan, th.cyan {
+    background-color: #ddfcff;
+}
+
+td.blue, th.blue {
+    background-color: #79cbea;
+}
+
+.title{
+
+}
+
+.subtitle {
+    margin-bottom: 10px;
+    margin-top: -5px;
+    color: rgb(108, 105, 111)
+}
+
+.btn {
+    margin-top: 3px;
+}
+
+.hot-navbar{
+    background-color: rgb(171, 125, 175);
+}
+
+.hot-navbar .nav-item .nav-link{
+    padding-right: .5rem;
+    padding-left: .5rem;
+    color: #cebce3;
+}

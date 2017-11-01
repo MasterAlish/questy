@@ -1,0 +1,22 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Django Hotstart</title>
+
+    <script src="{% static 'js/jquery-3.2.1.slim.min.js' %}" type="application/javascript"></script>
+    <script src="{% static 'semantic/semantic.min.js' %}" type="application/javascript"></script>
+    <script src="{% static 'js/typeahead.bundle.js' %}"></script>
+    <script src="{% static 'js/hotstart.js' %}" type="application/javascript"></script>
+    <link href="{% static 'semantic/semantic.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/hotstart.css' %}" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="ui container">
+    {% block content %}
+
+    {% endblock %}
+</div>
+<footer style="height: 30px;"></footer>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load staticfiles i18n %}
+
+{% block content %}
+    <div style="text-align: center; margin-top: 100px;">
+        <div style="display: inline-block;">
+            {% if form.errors %}
+                <p>{% trans 'Неправильный пароль или имя пользователя' %}.</p>
+            {% endif %}
+
+            <h2>{% trans 'Quest Labs' %}</h2>
+
+            <form method="post" action="{% url 'my_login' %}" class="ui form">
+                {% csrf_token %}
+                <table style="text-align: right; margin-bottom: 20px;">
+                    <tr>
+                        <td>{% trans 'Имя пользователя' %}:</td>
+                        <td>{{ form.username }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans 'Пароль' %}:</td>
+                        <td>{{ form.password }}</td>
+                    </tr>
+                </table>
+
+                <input type="submit" value="{% trans 'Вход' %}" class="ui primary small button "/>
+                <input type="hidden" name="next" value="{{ next }}"/>
+            </form>
+        </div>
+    </div>
+{% endblock %}
