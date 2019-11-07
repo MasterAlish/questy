@@ -1,7 +1,10 @@
 {% extends "base.html" %}
-{% load staticfiles i18n %}
+{% load staticfiles i18n my_filters %}
 
 {% block content %}
+    {% show_navbar 'home' user %}
+    {% show_messages messages %}
+
     <div style="text-align: center; margin-top: 100px;">
         <div style="display: inline-block;">
             {% if form.errors %}
@@ -12,17 +15,16 @@
 
             <form method="post" action="{% url 'my_login' %}" class="ui form">
                 {% csrf_token %}
-                <table style="text-align: right; margin-bottom: 20px;">
-                    <tr>
-                        <td>{% trans 'Имя пользователя' %}:</td>
-                        <td>{{ form.username }}</td>
-                    </tr>
-                    <tr>
-                        <td>{% trans 'Пароль' %}:</td>
-                        <td>{{ form.password }}</td>
-                    </tr>
-                </table>
+                <p>
+                    <label for="id_username">Имя пользователя</label>
+                    {{ form.username }}
+                </p>
+                <p>
+                    <label for="id_username">Пароль</label>
+                    {{ form.password }}
+                </p>
 
+                <a href="{% url 'register' %}" class="ui secondary small button ">{% trans 'Регистрация' %}</a>
                 <input type="submit" value="{% trans 'Вход' %}" class="ui primary small button "/>
                 <input type="hidden" name="next" value="{{ next }}"/>
             </form>

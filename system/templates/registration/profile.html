@@ -1,0 +1,63 @@
+{% extends 'base_with_left_menu.html' %}
+{% load my_filters i18n %}
+
+{% block content %}
+
+    <div class="ui inverted segment">
+        <div class="ui inverted items">
+            <div class="item">
+                <div class="image">
+                    <img src="{{ user.email|gravatar }}">
+                </div>
+                <div class="content">
+                    <div class="header">{{ user.username }} (<span style="color: green;">{{ user.get_full_name }}</span>)
+                    </div>
+                    <hr>
+                    <div class="meta">
+                        <b>Дата регистрации: </b> <i
+                            class="calendar plus outline icon"></i> {{ user.date_joined|date:"d.m.Y" }}
+                    </div>
+                    <div class="meta">
+                        <b>Статус: </b>
+                        {% if user.details.current_team %}
+                            <i class="users icon"></i> в команде "{{ user.details.current_team.name }}"
+                        {% else %}
+                            <i class="user outline icon"></i> свободен
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui inverted segment">
+        <div class="ui inverted items">
+            <div class="item">
+                <div class="image"></div>
+                <div class="content">
+                    <div class="header">Личные данные</div>
+                    <hr>
+                    <div class="meta">
+                        <b>Email: </b> <i class="mail icon"></i> {{ user.email }}
+                    </div>
+                    <div class="meta">
+                        <b>Номер телефона: </b> <i class="phone icon"></i> {{ user.details.phone_number|default_if_none:"Не указан" }}
+                    </div>
+                    <div class="meta">
+                        <b>Имя: </b> <i class="user icon"></i> {{ user.first_name }}
+                    </div>
+                    <div class="meta">
+                        <b>Фамилия: </b> <i class="user icon"></i> {{ user.last_name }}
+                    </div>
+                    <div class="meta">
+                        <b>Рост (см): </b> <i class="arrows alternate vertical icon"></i> {{ user.details.height|default_if_none:"Не указан" }}
+                    </div>
+                    <div class="meta">
+                        <b>Вес (кг): </b> <i class="weight icon"></i> {{ user.details.weight|default_if_none:"Не указан" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

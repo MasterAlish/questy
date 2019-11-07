@@ -20,12 +20,14 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.views import static
 
-from system.views import auth_logout, HomeView, SetLangView
+from system.views import auth_logout, HomeView, SetLangView, RegisterView, ProfileView
 
 urlpatterns = [
     url(r'^$', login_required(HomeView.as_view()), name="home"),
     url(r'^accounts/login/', auth_views.login, name="my_login"),
     url(r'^accounts/logout/$', auth_logout, name="logout"),
+    url(r'^accounts/profile/$', ProfileView.as_view(), name="profile"),
+    url(r'^accounts/register/$', RegisterView.as_view(), name="register"),
     url(r'^set_language/$', SetLangView.as_view(), name='set_language'),
 
     url(r'^grappelli/', include('grappelli.urls')),

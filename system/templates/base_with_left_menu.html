@@ -1,0 +1,32 @@
+{% load staticfiles my_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Django Hotstart</title>
+
+    <script src="{% static 'js/jquery-3.2.1.slim.min.js' %}" type="application/javascript"></script>
+    <script src="{% static 'semantic/semantic.min.js' %}" type="application/javascript"></script>
+    <script src="{% static 'js/typeahead.bundle.js' %}"></script>
+    <script src="{% static 'js/hotstart.js' %}" type="application/javascript"></script>
+    <link href="{% static 'semantic/semantic.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/hotstart.css' %}" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="ui container">
+    {% show_navbar 'home' user %}
+    {% show_messages messages %}
+
+    <div class="ui stackable grid">
+        <div class="four wide column">
+            {% include 'block/side_menu.html' %}
+        </div>
+        <div class="twelve wide column">
+            {% block content %}
+
+            {% endblock %}
+        </div>
+    </div>
+</div>
+<footer style="height: 30px;"></footer>
+</body>
+</html>

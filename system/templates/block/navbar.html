@@ -1,13 +1,17 @@
 {% load i18n my_filters %}
 
-<header class="ui segment">
-    <div class="ui secondary menu">
+<header class="ui inverted segment">
+    <div class="ui inverted secondary pointing menu">
         <a class="item {% if section == 'home' %}active{% endif %}" href="/">
-            {% trans 'Главная' %}
+            {% trans 'Quest Labs' %}
         </a>
         <div class="right menu">
 
             {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="ui black image label item">
+                    <img src="{{ user.email|gravatar }}">
+                    &nbsp;&nbsp;&nbsp;{{ user.username }}
+                </a>
                 <a class="item"
                    href="{% url 'logout' %}">Выйти</a>
             {% else %}

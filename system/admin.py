@@ -9,3 +9,5 @@ class MyAdmin(ModelAdmin):
         exclude = []
 
 admin.site.register(Permission)
+admin.site.register(Team)
+admin.site.register(UserDetails)

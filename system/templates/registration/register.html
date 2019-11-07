@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load staticfiles i18n my_filters %}
+
+{% block content %}
+    {% show_navbar 'home' user %}
+    {% show_messages messages %}
+
+
+    <div style="text-align: center; margin-top: 20px;">
+        <div style="display: inline-block;">
+            <h2>{% trans 'Quest Labs' %}: {% trans 'Регистрация' %}</h2>
+
+            <form method="post" class="ui form">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <input type="submit" value="{% trans 'Регистрация' %}" class="ui primary small button "/>
+                <input type="hidden" name="next" value="{{ next }}"/>
+            </form>
+        </div>
+    </div>
+{% endblock %}

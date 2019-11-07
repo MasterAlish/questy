@@ -1,5 +1,5 @@
 from datetime import datetime, time
-
+from hashlib import md5
 from django import template
 from django.db.models import Sum
 from django.utils import timezone
@@ -70,6 +70,11 @@ def order_by(queryset, field):
 @register.filter
 def if_none(value, default):
     return value if value else default
+
+
+@register.filter
+def gravatar(value):
+    return "https://www.gravatar.com/avatar/%s?d=robohash&s=256" % md5(value).hexdigest()
 
 
 @register.inclusion_tag("block/pagination.html")

@@ -1,11 +1,14 @@
 # coding=utf-8
-
+from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.utils import translation
 from django.views.generic import TemplateView
+
+from system.forms import RegistrationForm
+from system.models import UserDetails
 
 
 def auth_logout(request):
@@ -46,8 +49,42 @@ class HomeView(BaseView):
     template_name = "home.html"
 
     def dispatch(self, request, *args, **kwargs):
-
         return super(HomeView, self).dispatch(request, *args, **kwargs)
+
+
+class RegisterView(BaseView):
+    template_name = "registration/register.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        form = RegistrationForm()
+        if request.method == 'POST':
+            form = RegistrationForm(request.POST)
+            if form.is_valid():
+                form.save()
+                self.save_details(form)
+                messages.success(request, u"Вы успешно прошли регистрацию! Войдите используя свой аккаунт")
+                return redirect(reverse("my_login"))
+
+        context = {
+            'form': form
+        }
+        return render(request, self.template_name, context)
+
+    def save_details(self, form):
+        form.instance.set_password(form.cleaned_data['password'])
+        form.instance.save()
+        details = UserDetails(user=form.instance)
+        if "phone_number" in form.cleaned_data:
+            details.phone_number = form.cleaned_data["phone_number"]
+        if "weight" in form.cleaned_data:
+            details.weight = form.cleaned_data["weight"]
+        if "height" in form.cleaned_data:
+            details.height = form.cleaned_data["height"]
+        details.save()
+
+
+class ProfileView(BaseView):
+    template_name = "registration/profile.html"
 
 
 class SetLangView(BaseView):

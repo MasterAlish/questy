@@ -1,7 +1,15 @@
 {% if messages %}
-    <ul class="messages">
+    <div class="messages">
         {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% if message.tags == "success" %}
+                <div class="ui inverted teal message">{{ message }}</div>
+            {% elif message.tags == "error" %}
+                <div class="ui inverted red message">{{ message }}</div>
+            {% elif message.tags == "warning" %}
+                <div class="ui inverted orange message">{{ message }}</div>
+            {% elif message.tags == "info" %}
+                <div class="ui inverted blue message">{{ message }}</div>
+            {% endif %}
         {% endfor %}
-    </ul>
+    </div>
 {% endif %}

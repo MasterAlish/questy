@@ -1,0 +1,23 @@
+{% load my_filters %}
+<div class="ui fluid dark card">
+    <div class="image" style="max-width: 150px;">
+        <img src="{{ user.email|gravatar }}">
+    </div>
+    <div class="content">
+        <a class="header">{{ user.username }}</a>
+        <div class="meta">
+            <span class="date">{{ user.get_full_name }}</span>
+        </div>
+        <div class="description">
+            <hr>
+            <div class="ui inverted link list">
+                <a class="item" href="{% url 'profile' %}">Мое личное дело</a>
+                <a class="item" href="{% url 'profile' %}">Моя команда</a>
+            </div>
+            <hr>
+            <div class="ui inverted link list">
+                <a class="item" href="{% url 'logout' %}">Выход</a>
+            </div>
+        </div>
+    </div>
+</div>
