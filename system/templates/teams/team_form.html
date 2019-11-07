@@ -1,0 +1,29 @@
+{% extends 'base_with_left_menu.html' %}
+{% load my_filters staticfiles i18n %}
+
+{% block content %}
+    <div class="ui inverted segment">
+        <div class="ui inverted items">
+            <div class="item">
+                <div class="image">
+                    <img src="{% static 'img/team.jpg' %}">
+                </div>
+                <div class="content">
+                    <div class="header">Создать новую команду</div>
+                    <hr>
+                    <form method="post" class="ui inverted form">
+                        {% csrf_token %}
+                        <div class="two fields">
+                            <div class="field">
+                                <label>Название команды</label>
+                                {{ form.name }}
+                            </div>
+                        </div>
+                        <button class="ui submit button">Создать</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

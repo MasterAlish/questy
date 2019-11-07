@@ -1,0 +1,6 @@
+{% load staticfiles %}
+{% if sex == 'male' %}
+    <img style="height: 16px;" src="{% static 'img/boy.png' %}">
+{% else %}
+    <img style="height: 16px;" src="{% static 'img/girl.png' %}">
+{% endif %}

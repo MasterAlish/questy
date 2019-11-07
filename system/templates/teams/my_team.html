@@ -1,0 +1,144 @@
+{% extends 'base_with_left_menu.html' %}
+{% load my_filters staticfiles i18n %}
+
+{% block content %}
+    {% if team %}
+        <div class="ui inverted segment">
+            <div class="ui inverted items">
+                <div class="item">
+                    <div class="image">
+                        <img src="{{ team.name|gravatar_pattern }}">
+                    </div>
+                    <div class="content">
+                        <div class="header">Команда <span style="color: green;">{{ team.name }}</span></div>
+                        <hr>
+                        <div class="meta">
+                            <b>Дата создания: </b> <i
+                                class="calendar plus outline icon"></i> {{ team.created_at|date:"d.m.Y" }}
+                        </div>
+                        <div class="meta">
+                            <b>Капитан: </b> <i class="user secret icon"></i> <a class="ui" href="#">{{ team.captain.username }}</a>
+                        </div>
+                        <div class="meta">
+                            <b>Участников в команде: </b> <i class="users icon"></i> {{ team.members.count }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui inverted segment">
+            <div class="ui inverted items">
+                <div class="item">
+                    <div class="image"></div>
+                    <div class="content">
+                        <div class="header">Состав команды</div>
+                        <hr>
+                        <div class="ui inverted relaxed divided list">
+                            <div class="item">
+                                <div class="content">
+                                    <div class="header">Капитан команды</div>
+                                    <div class="ui list">
+                                        <div class="item">
+                                            1. {% sex_icon team.captain.details.sex %} <a class="ui" href="#">{{ team.captain.username }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="content">
+                                    <div class="header">Основной состав команды</div>
+                                    <div class="ui list">
+                                        {% for member in team.members.all %}
+                                            {% if member.user != team.captain %}
+                                                <div class="item">
+                                                    {{ forloop.counter|add:1 }}. {% sex_icon member.sex %} <a class="ui" href="#">{{ member.user.username }}</a>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% if user == team.captain %}
+                                        <a class="ui mini inverted button" href="{% url 'invite_to_team' team.id %}">Пригласить участников</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if team.invitations.count > 0 %}
+                                <div class="item">
+                                    <div class="content">
+                                        <div class="header">Приглашенные</div>
+                                        <div class="ui list">
+                                            {% for invitation in team.invitations.all %}
+                                                <div class="item">
+                                                    {{ forloop.counter }}. {% sex_icon invitation.user.details.sex %} <a class="ui" href="#">{{ invitation.user.username }}</a>
+                                                    <form action="{% url 'delete_invite' invitation.id %}" method="post" style="display: inline;">
+                                                        {% csrf_token %}
+                                                        <button name="uninvite" class="ui inverted mini red button">
+                                                            Удалить приглашение
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="ui inverted segment">
+            <div class="ui inverted items">
+                <div class="item">
+                    <div class="image">
+                        <img src="{% static 'img/team.jpg' %}">
+                    </div>
+                    <div class="content">
+                        <div class="header">Команда</div>
+                        <hr>
+                        Вы не состоите ни в какой команде в данный момент <br><br>
+                        <a class="ui mini inverted button" href="{% url 'create_team' %}">Создать свою команду</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="ui inverted segment">
+        <div class="ui inverted items">
+            <div class="item">
+                <div class="image"></div>
+                <div class="content">
+                    <div class="header">Приглашения в другие команды</div>
+                    <hr>
+                    {% if invitations %}
+                        <div class="ui list">
+                            {% for invitation in invitations %}
+                                <div class="item">
+                                    {{ forloop.counter }}. <a class="ui" href="#">{{ invitation.team.name }}</a>
+                                    <form action="{% url 'delete_invite' invitation.id %}" method="post"
+                                          style="display: inline;">
+                                        {% csrf_token %}
+                                        <button name="uninvite" class="ui inverted mini red button">
+                                            Отказаться
+                                        </button>
+                                    </form>
+                                    <form action="{% url 'accept_invite' invitation.id %}" method="post"
+                                          style="display: inline;">
+                                        {% csrf_token %}
+                                        <button name="uninvite" class="ui inverted mini green button">
+                                            Принять
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        Приглашений нет
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

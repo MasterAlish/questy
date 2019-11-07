@@ -7,6 +7,18 @@ html, body {
     color: red;
 }
 
+.messages{
+    margin-bottom: 20px;
+}
+
+a{
+    color: #4183c4;
+}
+
+.ui.inverted.items a:hover{
+    color: #6d97c4;
+}
+
 .ui.inverted.items > .item > .content > .header {
     color: rgba(255, 255, 255, .9);
 }

@@ -23,6 +23,11 @@ def show_messages(messages):
     return {'messages': messages}
 
 
+@register.inclusion_tag('block/sex.html')
+def sex_icon(sex):
+    return {'sex': sex}
+
+
 @register.filter
 def ellipsize(text, n):
     if len(text) > n:
@@ -75,6 +80,11 @@ def if_none(value, default):
 @register.filter
 def gravatar(value):
     return "https://www.gravatar.com/avatar/%s?d=robohash&s=256" % md5(value).hexdigest()
+
+
+@register.filter
+def gravatar_pattern(value):
+    return "https://www.gravatar.com/avatar/%s?d=identicon&s=256" % md5(value).hexdigest()
 
 
 @register.inclusion_tag("block/pagination.html")

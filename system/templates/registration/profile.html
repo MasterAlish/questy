@@ -10,7 +10,7 @@
                     <img src="{{ user.email|gravatar }}">
                 </div>
                 <div class="content">
-                    <div class="header">{{ user.username }} (<span style="color: green;">{{ user.get_full_name }}</span>)
+                    <div class="header">{% sex_icon user.details.sex %} {{ user.username }} (<span style="color: green;">{{ user.get_full_name }}</span>)
                     </div>
                     <hr>
                     <div class="meta">
@@ -39,6 +39,9 @@
                     <hr>
                     <div class="meta">
                         <b>Email: </b> <i class="mail icon"></i> {{ user.email }}
+                    </div>
+                    <div class="meta">
+                        <b>Пол: </b> <i class="{{ user.details.sex }} icon"></i> {{ user.details.get_sex_display }}
                     </div>
                     <div class="meta">
                         <b>Номер телефона: </b> <i class="phone icon"></i> {{ user.details.phone_number|default_if_none:"Не указан" }}

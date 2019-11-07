@@ -9,6 +9,8 @@ from django.forms.models import ModelForm
 from django.forms.widgets import TextInput, NumberInput
 from django.utils.translation import ugettext_lazy as _
 
+from system.models import Team
+
 
 class RegistrationForm(ModelForm):
     username = forms.SlugField(required=True, label=u"Имя пользователя")
@@ -18,6 +20,8 @@ class RegistrationForm(ModelForm):
     phone_number = forms.CharField(required=False, label=u"Номер телефона")
     weight = forms.IntegerField(required=False, label=u"Ваш вес")
     height = forms.IntegerField(required=False, label=u"Ваш рост")
+    sex = forms.ChoiceField(required=True, choices=[["male", u"Мужской"], ["female", u"Женский"]], label=u"Ваш пол",
+                            widget=forms.Select)
     password = forms.CharField(required=True, widget=forms.PasswordInput, label=u"Придумайте пароль")
     password_repeat = forms.CharField(required=True, widget=forms.PasswordInput, label=u"Повторите пароль")
 
@@ -35,3 +39,9 @@ class RegistrationForm(ModelForm):
     class Meta:
         model = User
         fields = ["username", "email", "first_name", "last_name"]
+
+
+class TeamForm(ModelForm):
+    class Meta:
+        model = Team
+        fields = ['name']

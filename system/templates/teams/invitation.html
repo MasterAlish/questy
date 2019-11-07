@@ -1,0 +1,80 @@
+{% extends 'base_with_left_menu.html' %}
+{% load my_filters staticfiles i18n %}
+
+{% block content %}
+    <div class="ui inverted segment">
+        <div class="ui inverted items">
+            <div class="item">
+                <div class="image">
+                    <img src="{{ team.name|gravatar_pattern }}">
+                </div>
+                <div class="content">
+                    <div class="header">Команда <span style="color: green;">{{ team.name }}</span></div>
+                    <hr>
+                    <div class="meta">
+                        <b>Дата создания: </b> <i
+                            class="calendar plus outline icon"></i> {{ team.created_at|date:"d.m.Y" }}
+                    </div>
+                    <div class="meta">
+                        <b>Капитан: </b> <i class="user secret icon"></i> <a class="ui"
+                                                                             href="#">{{ team.captain.username }}</a>
+                    </div>
+                    <div class="meta">
+                        <b>Участников в команде: </b> <i class="users icon"></i> {{ team.members.count }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui inverted segment">
+        <div class="ui inverted items">
+            <div class="item">
+                <div class="image"></div>
+                <div class="content">
+                    <div class="header">Поиск участников</div>
+                    <hr>
+                    <form method="post" class="ui inverted form">
+                        {% csrf_token %}
+                        <div class="two fields">
+                            <div class="field">
+                                <label>Введите имя участника</label>
+                                <input type="text" class="ui input" name="keyword" value="{{ keyword }}">
+                            </div>
+                        </div>
+                        <button name="search" class="ui inverted submit button">Поиск</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if search_result %}
+        <div class="ui inverted segment">
+            <div class="ui inverted items">
+                <div class="item">
+                    <div class="image"></div>
+                    <div class="content">
+                        <div class="header">Результаты поиска</div>
+                        <hr>
+                        {% if users.count == 0 %}
+                            Никого не удалось найти
+                        {% else %}
+                            <div class="ui list">
+                                {% for user in users %}
+                                    <div class="item">
+                                        {{ forloop.counter }}. {% sex_icon user.details.sex %}
+                                        <a class="ui" target="_blank" href="#">{{ user.username }}</a>
+                                        <form method="post" style="display: inline; ">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="user" value="{{ user.id }}">
+                                            <button name="invite" class="ui inverted mini red button">Пригласить</button>
+                                        </form>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

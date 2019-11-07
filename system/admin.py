@@ -8,6 +8,11 @@ class MyAdmin(ModelAdmin):
     class Meta:
         exclude = []
 
+
+class InvitationAdmin(MyAdmin):
+    list_display = ["team", "user"]
+
 admin.site.register(Permission)
 admin.site.register(Team)
 admin.site.register(UserDetails)
+admin.site.register(Invitation, InvitationAdmin)

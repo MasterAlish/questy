@@ -28,6 +28,7 @@ class HasPermMixin(object):
 
     @classmethod
     def as_view(cls, **initkwargs):
+        # type: (object) -> object
         view = super(HasPermMixin, cls).as_view(**initkwargs)
         if not isinstance(cls.required_permissions, list):
             raise Exception("required_permissions must be list of permissions")
@@ -74,6 +75,7 @@ class RegisterView(BaseView):
         form.instance.set_password(form.cleaned_data['password'])
         form.instance.save()
         details = UserDetails(user=form.instance)
+        details.sex = form.cleaned_data["sex"]
         if "phone_number" in form.cleaned_data:
             details.phone_number = form.cleaned_data["phone_number"]
         if "weight" in form.cleaned_data:
