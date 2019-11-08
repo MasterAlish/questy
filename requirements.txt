@@ -5,3 +5,4 @@ django-datetime-widget
 django-grappelli
 openpyxl==2.4.8
 uwsgi
+django-ckeditor==5.7.1

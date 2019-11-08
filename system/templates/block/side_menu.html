@@ -1,4 +1,4 @@
-{% load my_filters %}
+{% load my_filters staticfiles %}
 <div class="ui fluid dark card">
     <div class="image" style="max-width: 150px;">
         <img src="{{ user.email|gravatar }}">
@@ -18,6 +18,26 @@
             <div class="ui inverted link list">
                 <a class="item" href="{% url 'logout' %}">Выход</a>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="ui fluid dark card">
+    <div class="content">
+        <a class="header">Прошедшие игры</a>
+        <div class="description">
+            <hr>
+            {% for game in finished_games %}
+                <img style="max-width: 24px; float: left; margin-right: 10px;" src="{% static 'img/labyrinth.png' %}">
+                <a href="#" class="ui blue header">(#{{ game.id }}) "{{ game.title }}"</a>
+                <div style="clear: both;"></div>
+
+                <div class="ui list">
+                    <div class="item"><b>Начало игры:</b> {{ game.starts_at|date:"d.m.Y H:i" }}</div>
+                    <div class="item"><b>Приняли участие:</b> {{ game.teams.count }} команд</div>
+                </div>
+                <hr>
+            {% endfor %}
         </div>
     </div>
 </div>

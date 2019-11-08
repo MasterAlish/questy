@@ -1,0 +1,11 @@
+{% extends 'base_with_left_menu.html' %}
+{% load my_filters i18n staticfiles %}
+
+{% block navbar %}
+    {% show_navbar 'games' user %}
+{% endblock %}
+
+
+{% block content %}
+    {% insert_game game request %}
+{% endblock %}

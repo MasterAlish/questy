@@ -4,6 +4,8 @@ from django import template
 from django.db.models import Sum
 from django.utils import timezone
 
+from system.models import Game
+
 register = template.Library()
 
 
@@ -21,6 +23,17 @@ def show_breadcrumb(*args):
 @register.inclusion_tag('block/messages.html')
 def show_messages(messages):
     return {'messages': messages}
+
+
+@register.inclusion_tag('block/side_menu.html')
+def insert_side_menu(user):
+    finished_games = Game.objects.filter(finished=True)
+    return {'user': user, 'finished_games': finished_games}
+
+
+@register.inclusion_tag('block/game.html')
+def insert_game(game, request, short=False):
+    return {'game': game, 'request':request, 'short': short}
 
 
 @register.inclusion_tag('block/sex.html')

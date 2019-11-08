@@ -20,6 +20,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.views import static
 
+from system.features.game import TakePartInGameView, GamesView, GameView
 from system.features.teams import MyTeamView, CreateTeamView, InviteToTeamView, DeleteInvitationView, \
     AcceptInvitationView
 from system.views import auth_logout, HomeView, SetLangView, RegisterView, ProfileView
@@ -32,6 +33,10 @@ urlpatterns = [
     url(r'^team/delete_invite/(?P<id>\d+)/$', login_required(DeleteInvitationView.as_view()), name="delete_invite"),
     url(r'^team/accept_invite/(?P<id>\d+)/$', login_required(AcceptInvitationView.as_view()), name="accept_invite"),
 
+    url(r'^games/$', login_required(GamesView.as_view()), name="games"),
+    url(r'^game/(?P<game_id>\d+)/info/$', login_required(GameView.as_view()), name="game_info"),
+    url(r'^game/(?P<game_id>\d+)/take_part/$', login_required(TakePartInGameView.as_view()), name="take_part_in_game"),
+
     url(r'^accounts/login/', auth_views.login, name="my_login"),
     url(r'^accounts/logout/$', auth_logout, name="logout"),
     url(r'^accounts/profile/$', ProfileView.as_view(), name="profile"),
@@ -40,6 +45,7 @@ urlpatterns = [
 
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^ckeditor/', include('ckeditor_uploader.urls')),
     url(r'^media/(?P<path>.*)$', static.serve, {'document_root': settings.MEDIA_ROOT}),
 ]
 

@@ -1,9 +1,13 @@
 {% extends 'base_with_left_menu.html' %}
 {% load my_filters i18n staticfiles %}
 
+{% block navbar %}
+    {% show_navbar 'games' user %}
+{% endblock %}
+
+
 {% block content %}
-    <h1 class="ui ">Предстоящие игры</h1>
     {% for game in games %}
-        {% insert_game game request %}
+        {% insert_game game request True %}
     {% endfor %}
 {% endblock %}

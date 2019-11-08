@@ -20,7 +20,7 @@
                     <div class="meta">
                         <b>Статус: </b>
                         {% if user.details.current_team %}
-                            <i class="users icon"></i> в команде "{{ user.details.current_team.name }}"
+                            <i class="users icon"></i> в команде "<a href="#" class="ui">{{ user.details.current_team.name }}</a>"
                         {% else %}
                             <i class="user outline icon"></i> свободен
                         {% endif %}

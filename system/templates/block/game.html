@@ -1,0 +1,35 @@
+{% load staticfiles %}
+<div class="ui inverted segment game">
+    <img style="max-width: 24px; float: left; margin-right: 10px;" src="{% static 'img/labyrinth.png' %}">
+    <a href="{% url 'game_info' game.id %}" class="ui blue header">(#{{ game.id }}) "{{ game.title }}"</a>
+    <div style="clear: both;"></div>
+    <hr>
+    <div class="ui list">
+        <div class="item"><b>Играем:</b> Командами</div>
+        <div class="item"><b>Последовательность:</b> Линейная</div>
+        <div class="item"><b>Начало игры:</b> {{ game.starts_at|date:"d.m.Y H:i" }}</div>
+        <div class="item"><b>Времени осталось:</b> {{ game.starts_at|timeuntil }}</div>
+        {% if not game.finished %}
+            <form action="{% url 'take_part_in_game' game.id %}" method="post" class="item">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button class="ui mini inverted orange button">Подать заявку на участие</button>
+            </form>
+        {% endif %}
+    </div>
+    <hr>
+    <div class="ui list">
+        <div class="item">
+            <b>Приняты к участию:</b> {{ game.teams.count }} команд:
+            {% for participation in game.teams.all %}
+                <a href="#" class="ui">{{ participation.team.name }}</a>,
+            {% endfor %}
+        </div>
+    </div>
+    {% if not short %}
+        <hr>
+        <div class="game-content">
+            {{ game.content|safe }}
+        </div>
+    {% endif %}
+</div>

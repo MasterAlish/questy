@@ -5,6 +5,9 @@
         <a class="item {% if section == 'home' %}active{% endif %}" href="/">
             {% trans 'Quest Labs' %}
         </a>
+        <a class="item {% if section == 'games' %}active{% endif %}" href="{% url 'games' %}">
+            {% trans 'Игры' %}
+        </a>
         <div class="right menu">
 
             {% if user.is_authenticated %}

@@ -8,7 +8,7 @@ from django.utils import translation
 from django.views.generic import TemplateView
 
 from system.forms import RegistrationForm
-from system.models import UserDetails
+from system.models import UserDetails, Game
 
 
 def auth_logout(request):
@@ -50,7 +50,8 @@ class HomeView(BaseView):
     template_name = "home.html"
 
     def dispatch(self, request, *args, **kwargs):
-        return super(HomeView, self).dispatch(request, *args, **kwargs)
+        games = Game.objects.filter(finished=False)
+        return render(request, self.template_name, {'games': games})
 
 
 class RegisterView(BaseView):

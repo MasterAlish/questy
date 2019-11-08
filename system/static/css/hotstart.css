@@ -81,3 +81,21 @@ a{
   border-top: 1px solid #dedede !important;
   color: inherit;
 }
+
+a.ui{
+    text-decoration: underline;
+}
+
+.game-content img{
+    max-width: 100%;
+}
+
+.game-content p{
+    margin-block-start: 5px;
+    margin-block-end: 5px;
+}
+
+.game .ui.list .item{
+    font-size: 13px;
+    color: rgb(88, 145, 187);
+}
