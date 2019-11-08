@@ -1,4 +1,5 @@
 # coding=utf-8
+import json
 import os
 import random
 from datetime import datetime, timedelta
@@ -7,7 +8,7 @@ from ckeditor.fields import RichTextField
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils import translation
+from django.utils import translation, timezone
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -65,6 +66,17 @@ class Game(models.Model):
     status = models.CharField(max_length=20, default="not_started", verbose_name=u"Состояние", choices=[
         ["not_started", u"Не начат"], ["started", u"Идет"], ["scoring", u"Подсчет очков"], ["finished", u"Закончен"],
     ])
+    sequence = models.CharField(max_length=20, verbose_name=u"Последовательность", default="linear", choices=[
+        ["linear", u"Линейная"], ["random", u"Штурмовая"]
+    ])
+
+    def ready_to_start(self):
+        seconds_to_start = (self.starts_at - timezone.now()).total_seconds()
+        return seconds_to_start < 300.0
+
+    def starts_in(self):
+        seconds_to_start = (self.starts_at - timezone.now()).total_seconds()
+        return int(max(seconds_to_start, 0))
 
     def __unicode__(self):
         return self.title
@@ -73,6 +85,61 @@ class Game(models.Model):
         verbose_name_plural = u"Игры"
         verbose_name = u"Игра"
         ordering = ["starts_at"]
+
+
+class GameLevel(models.Model):
+    game = models.ForeignKey(Game, verbose_name=u"Игры", related_name="levels")
+    order = models.IntegerField(default=0, verbose_name=u"Уровень")
+    title = models.CharField(max_length=255, verbose_name=u"Название уровня")
+    content = RichTextField(verbose_name=u"Текст задания")
+    right_answers = models.TextField(verbose_name=u"Правильные ответы(json array)")
+    auto_close_time = models.IntegerField(verbose_name=u"Время автоперехода(мин)", default=0)
+
+    def is_answer_right(self, answer):
+        answers = json.loads(self.right_answers)
+        if answer and answer in answers:
+            return True
+        return False
+
+    def __unicode__(self):
+        return self.title
+
+    class Meta:
+        verbose_name_plural = u"Уровни игры"
+        verbose_name = u"Уровень игры"
+        ordering = ["game", "order"]
+
+
+class Hint(models.Model):
+    level = models.ForeignKey(GameLevel, verbose_name=u"Уровень игры")
+    content = RichTextField(verbose_name=u"Текст подсказки")
+    available_in = models.IntegerField(verbose_name=u"Доступна через(мин)", default=0)
+    penalty = models.IntegerField(verbose_name=u"Штрафное время(мин)", default=0)
+
+    def __unicode__(self):
+        return u"Подсказка к уровню '%s'" % self.level.title
+
+    class Meta:
+        verbose_name_plural = u"Подсказки"
+        verbose_name = u"Подсказка"
+        ordering = ["level", "available_in"]
+
+
+class Bonus(models.Model):
+    level = models.ForeignKey(GameLevel, verbose_name=u"Уровень игры")
+    order = models.IntegerField(default=0, verbose_name=u"Порядок")
+    title = models.CharField(max_length=255, verbose_name=u"Название бонуса")
+    content = RichTextField(verbose_name=u"Текст задания бонуса")
+    bonus_time = models.IntegerField(verbose_name=u"Бонусное время(мин)", default=0)
+    right_answers = models.TextField(verbose_name=u"Правильные ответы(json array)")
+
+    def __unicode__(self):
+        return u"Бонус №%d '%s'" % (self.order, self.title)
+
+    class Meta:
+        verbose_name_plural = u"Бонусы"
+        verbose_name = u"Бонус"
+        ordering = ["level", "order"]
 
 
 class TeamInGame(models.Model):

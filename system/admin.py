@@ -20,10 +20,25 @@ class TeamInGameAdmin(MyAdmin):
 class PlayerInGameAdmin(MyAdmin):
     list_display = ["game", "user"]
 
+
+class GameLevelAdmin(MyAdmin):
+    list_display = ["game", "order", "title", "auto_close_time"]
+
+
+class HintAdmin(MyAdmin):
+    list_display = ["level", "available_in", "penalty"]
+
+
+class BonusAdmin(MyAdmin):
+    list_display = ["level", "order", "title", "bonus_time"]
+
 admin.site.register(Permission)
 admin.site.register(Team)
 admin.site.register(UserDetails)
 admin.site.register(Invitation, InvitationAdmin)
 admin.site.register(Game)
+admin.site.register(GameLevel, GameLevelAdmin)
+admin.site.register(Hint, HintAdmin)
+admin.site.register(Bonus, BonusAdmin)
 admin.site.register(TeamInGame, TeamInGameAdmin)
 admin.site.register(PlayerInGame, PlayerInGameAdmin)

@@ -7,15 +7,15 @@ html, body {
     color: red;
 }
 
-.messages{
+.messages {
     margin-bottom: 20px;
 }
 
-a{
+a {
     color: #4183c4;
 }
 
-.ui.inverted.items a:hover{
+.ui.inverted.items a:hover {
     color: #6d97c4;
 }
 
@@ -36,66 +36,93 @@ a{
 }
 
 .ui.dark.card {
-  max-width: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 290px;
-  min-height: 0px;
-  background: #1b1c1d;
-  padding: 0em;
-  border: none;
-  border-radius: 0.28571429rem;
-  box-shadow: 0px 1px 3px 0px #1b1c1d, 0px 0px 0px 1px #1b1c1d;
-  transition: box-shadow 0.1s ease, transform 0.1s ease;
+    max-width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 290px;
+    min-height: 0px;
+    background: #1b1c1d;
+    padding: 0em;
+    border: none;
+    border-radius: 0.28571429rem;
+    box-shadow: 0px 1px 3px 0px #1b1c1d, 0px 0px 0px 1px #1b1c1d;
+    transition: box-shadow 0.1s ease, transform 0.1s ease;
 }
 
 .ui.dark.card {
-  background: #1b1c1d;
+    background: #1b1c1d;
 }
 
 .ui.dark.cards > .dark.card > .content > a.header, .ui.dark.card > .content > a.header {
-  color: rgb(196, 196, 196);
+    color: rgb(196, 196, 196);
 }
 
 .ui.cards > .card .meta, .ui.card .meta {
-  font-size: 1em;
-  color: #7a7a83;
+    font-size: 1em;
+    color: #7a7a83;
 }
 
 .ui.dark.cards > .dark.card > .content > .header, .ui.dark.card > .content > .header {
-  color: white;
+    color: white;
 }
 
 .ui.dark.cards > .dark.card > .content > .description, .ui.dark.card > .content > .description {
-  clear: both;
-  color: white;
+    clear: both;
+    color: white;
 }
 
 .ui.dark.cards > .dark.card > .content > a.header:hover, .ui.dark.card > .content > a.header:hover {
-  color: rgb(238, 238, 238);
+    color: rgb(238, 238, 238);
 }
 
 .ui.dark.cards > .dark.card > .extra,
 .ui.dark.card > .extra {
-  border-top: 1px solid #dedede !important;
-  color: inherit;
+    border-top: 1px solid #dedede !important;
+    color: inherit;
 }
 
-a.ui{
+hr {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid rgba(108, 125, 165, 0.2);
+}
+
+.ui.inline {
+    display: inline;
+}
+
+.ui.inverted.link.list span.item {
+    color: rgb(238, 238, 238);
+}
+
+.ui.inverted.link.list span.active.item {
+    color: rgb(183, 164, 241);
+}
+
+a.ui {
     text-decoration: underline;
 }
 
-.game-content img{
+.game-content img {
     max-width: 100%;
 }
 
-.game-content p{
+.game-content p {
     margin-block-start: 5px;
     margin-block-end: 5px;
 }
 
-.game .ui.list .item{
+.game .ui.list .item {
     font-size: 13px;
     color: rgb(88, 145, 187);
+}
+
+.game-answers {
+    margin-top: 50px;
+}
+
+.game-answers form.ui{
+    max-width: 200px;
 }

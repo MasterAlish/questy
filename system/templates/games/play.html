@@ -1,0 +1,36 @@
+{% extends 'games/base_for_play.html' %}
+{% load my_filters i18n staticfiles %}
+
+{% block content %}
+    {% load staticfiles %}
+    <div class="ui inverted segment game">
+        <img style="max-width: 24px; float: left; margin-right: 10px;" src="{% static 'img/labyrinth.png' %}">
+        <a href="{% url 'game_info' game.id %}" class="ui blue header">(#{{ game.id }}) "{{ game.title }}"</a>
+        <div style="clear: both;"></div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var starts_in = {{ game.starts_in }}+100;
+            setInterval(function () {
+                starts_in -= 1;
+                $("#seconds_left").text(starts_in);
+                if(starts_in < 1){
+                    window.location.reload();
+                }
+            }, 1000)
+        })
+    </script>
+    <div class="ui inverted segment">
+        <div class="ui inline red inverted statistic">
+            <div class="label">
+                До начала игры осталось
+            </div>
+            <div id="seconds_left" class="value">
+                5
+            </div>
+            <div class="label">
+                Секунд
+            </div>
+        </div>
+    </div>
+{% endblock %}

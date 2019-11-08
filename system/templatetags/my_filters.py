@@ -31,6 +31,11 @@ def insert_side_menu(user):
     return {'user': user, 'finished_games': finished_games}
 
 
+@register.inclusion_tag('games/play_menu.html')
+def insert_play_menu(my_team, game, level=None):
+    return {'game': game, 'my_team': my_team, 'level': level}
+
+
 @register.inclusion_tag('block/game.html')
 def insert_game(game, request, short=False):
     return {'game': game, 'request':request, 'short': short}

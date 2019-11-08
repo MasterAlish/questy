@@ -1,0 +1,33 @@
+{% extends 'games/base_for_play.html' %}
+{% load my_filters i18n staticfiles %}
+
+{% block content %}
+    {% load staticfiles %}
+    <div class="ui inverted segment game">
+        <img style="max-width: 24px; float: left; margin-right: 10px;" src="{% static 'img/labyrinth.png' %}">
+        <a href="{% url 'game_info' game.id %}" class="ui blue header">(#{{ game.id }}) "{{ game.title }}"</a>
+        <div style="clear: both;"></div>
+    </div>
+    <div class="ui inverted segment game">
+        <span class="ui blue header">Уровень №{{ level.order }}: {{ level.title }}</span>
+        <div style="clear: both;"></div>
+        <hr>
+        <div class="ui list">
+            <div class="item"><b>Автопереход через:</b> {{ level.auto_close_time }} мин.</div>
+        </div>
+        <hr>
+        <div class="game-content">
+            {{ level.content|safe }}
+        </div>
+        <div class="game-answers">
+            <form method="post" class="ui small dark form">
+                {% csrf_token %}
+                <p>
+                    <input name="answer" type="text" class="ui inverted input" placeholder="Введите ответ">
+                </p>
+                <button class="ui small inverted yellow button">Отправить</button>
+
+            </form>
+        </div>
+    </div>
+{% endblock %}
