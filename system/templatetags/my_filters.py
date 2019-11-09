@@ -4,7 +4,7 @@ from django import template
 from django.db.models import Sum
 from django.utils import timezone
 
-from system.models import Game
+from system.models import Game, Answer, LevelStat
 
 register = template.Library()
 
@@ -32,13 +32,25 @@ def insert_side_menu(user):
 
 
 @register.inclusion_tag('games/play_menu.html')
-def insert_play_menu(my_team, game, level=None):
-    return {'game': game, 'my_team': my_team, 'level': level}
+def insert_play_menu(my_team, game, current_level=None):
+    try:
+        stat = LevelStat.objects.get(team=my_team, level=current_level)
+        answers = stat.answers.all()
+    except:
+        answers = []
+    return {'game': game, 'my_team': my_team, 'current_level': current_level, 'answers': answers}
+
+
+@register.inclusion_tag('games/play_levels.html')
+def insert_game_levels(game, current_level, team):
+    open_levels = LevelStat.objects.filter(level__game=game, team=team).values_list("level__order")
+    open_levels = map(lambda l: l[0], open_levels)
+    return {'game': game, 'team': team, 'current_level': current_level, 'open_levels': open_levels}
 
 
 @register.inclusion_tag('block/game.html')
 def insert_game(game, request, short=False):
-    return {'game': game, 'request':request, 'short': short}
+    return {'game': game, 'request': request, 'short': short}
 
 
 @register.inclusion_tag('block/sex.html')

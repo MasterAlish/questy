@@ -7,20 +7,41 @@
         <hr>
         <div class="meta">
             <span><b>Вы играете в команде:</b>
-                <a href="#" class="ui">{{ my_team.name }}</a>
+                <a href="{% url 'team' my_team.id %}" class="ui">{{ my_team.name }}</a>
             </span>
         </div>
-        <div class="description">
-            <hr>
-            {% if not level %}
-                <div class="ui small purple message">
-                    Игра еще не началась
-                </div>
-            {% else %}
+        {% if current_level %}
+            <div class="description">
+                <hr>
                 <div class="ui inverted link list">
-                    <span class="active item">Уровень №{{ level.order }}: {{ level.title }}</span>
+                    <span class="active item">Уровень №{{ current_level.order }}: {{ current_level.title }}</span>
                 </div>
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
     </div>
 </div>
+{% if answers %}
+    <div class="ui fluid dark card">
+        <div class="content">
+            <a class="header">
+                Ваши ответы
+            </a>
+            <hr>
+            <div class="description">
+                <div class="ui list">
+                    {% for answer in answers %}
+                        {% if answer.right %}
+                            <div class="ui green item">
+                                {{ answer.answer }}
+                            </div>
+                        {% else %}
+                            <div class="ui red item">
+                                {{ answer.answer }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

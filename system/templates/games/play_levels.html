@@ -1,0 +1,17 @@
+<div class="ui inverted mini steps">
+    {% for level in game.levels.all %}
+        <div class="step
+            {% if current_level.id == level.id %} active {% endif %}
+            {% if level.order not in open_levels %} disabled {% endif %}
+            ">
+            <div class="content">
+                {% if level.order in open_levels %}
+                    <a href="{% url 'play_level' game.id level.order %}" class="title">Уровень №{{ level.order }}</a>
+                {% else %}
+                    <div class="title">Уровень №{{ level.order }}</div>
+                {% endif %}
+                <div class="description">{{ level.title }}</div>
+            </div>
+        </div>
+    {% endfor %}
+</div>

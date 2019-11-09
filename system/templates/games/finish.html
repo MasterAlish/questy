@@ -1,0 +1,29 @@
+{% extends 'games/base_for_play.html' %}
+{% load my_filters i18n staticfiles %}
+
+{% block content %}
+    {% load staticfiles %}
+    <div class="ui inverted segment game">
+        <img style="max-width: 24px; float: left; margin-right: 10px;" src="{% static 'img/labyrinth.png' %}">
+        <a href="{% url 'game_info' game.id %}" class="ui blue header">(#{{ game.id }}) "{{ game.title }}"</a>
+        <div style="clear: both;"></div>
+        <div style="clear: both;"></div>
+        <div id="levels_pad" style="overflow-x: auto; padding-right: 20px;">
+            <hr>
+            {% insert_game_levels game level my_team %}
+        </div>
+    </div>
+    <div class="ui inverted segment">
+        <div class="ui teal inverted icon message">
+            <i class="checkmark icon"></i>
+            <div class="content">
+                <div class="header">
+                    ФИНИШ
+                </div>
+                <p>
+                    Вы закончили игру!
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -20,15 +20,20 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.views import static
 
-from system.features.game import TakePartInGameView, GamesView, GameInfoView, PlayGameView, PlayGameLevelView
+from system.features.game import TakePartInGameView, GamesView, GameInfoView, PlayGameView, PlayGameLevelView, \
+    FinishGameView
 from system.features.teams import MyTeamView, CreateTeamView, InviteToTeamView, DeleteInvitationView, \
     AcceptInvitationView
 from system.views import auth_logout, HomeView, SetLangView, RegisterView, ProfileView
 
 urlpatterns = [
     url(r'^$', login_required(HomeView.as_view()), name="home"),
+
+    url(r'^user/(?P<team_id>\d+)/info/$', login_required(HomeView.as_view()), name="user"),
+
     url(r'^my/team/$', login_required(MyTeamView.as_view()), name="my_team"),
     url(r'^team/new/$', login_required(CreateTeamView.as_view()), name="create_team"),
+    url(r'^team/(?P<team_id>\d+)/info/$', login_required(HomeView.as_view()), name="team"),
     url(r'^team/(?P<team_id>\d+)/invite/$', login_required(InviteToTeamView.as_view()), name="invite_to_team"),
     url(r'^team/delete_invite/(?P<id>\d+)/$', login_required(DeleteInvitationView.as_view()), name="delete_invite"),
     url(r'^team/accept_invite/(?P<id>\d+)/$', login_required(AcceptInvitationView.as_view()), name="accept_invite"),
@@ -39,6 +44,7 @@ urlpatterns = [
     url(r'^game/(?P<game_id>\d+)/play/$', login_required(PlayGameView.as_view()), name="play_game"),
     url(r'^game/(?P<game_id>\d+)/level/(?P<level>\d+)/play/$', login_required(PlayGameLevelView.as_view()),
         name="play_level"),
+    url(r'^game/(?P<game_id>\d+)/finish/$', login_required(FinishGameView.as_view()),name="finish_game"),
 
     url(r'^accounts/login/', auth_views.login, name="my_login"),
     url(r'^accounts/logout/$', auth_logout, name="logout"),

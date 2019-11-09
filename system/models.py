@@ -78,6 +78,12 @@ class Game(models.Model):
         seconds_to_start = (self.starts_at - timezone.now()).total_seconds()
         return int(max(seconds_to_start, 0))
 
+    def has_next_level(self, level):
+        return self.levels.filter(order__gt=level.order).exists()
+
+    def get_next_level(self, level):
+        return self.levels.filter(order__gt=level.order).first()
+
     def __unicode__(self):
         return self.title
 
@@ -159,3 +165,36 @@ class PlayerInGame(models.Model):
     class Meta:
         verbose_name_plural = u"Игроки в игре"
         verbose_name = u"Игрок в игре"
+
+
+class LevelStat(models.Model):
+    level = models.ForeignKey(GameLevel, verbose_name=u"Уровень", related_name="stats", on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, verbose_name=u"Команда", on_delete=models.CASCADE)
+    started_at = models.DateTimeField(auto_now_add=True, verbose_name=u"Время начала уровня")
+    finished_at = models.DateTimeField(verbose_name=u"Время конца уровня", null=True, blank=True)
+    time_in_level = models.IntegerField(verbose_name=u"Время на уровне(сек)", default=0)
+    total_penalty = models.IntegerField(verbose_name=u"Штрафов на уровне(сек)", default=0)
+    total_bonus = models.IntegerField(verbose_name=u"Бонусов на уровне(сек)", default=0)
+
+    def __unicode__(self):
+        return unicode(self.level)
+
+    class Meta:
+        verbose_name_plural = u"Статистика команд на уровнях"
+        verbose_name = u"Статистика команды на уровне"
+        ordering = ["level__order"]
+
+
+class Answer(models.Model):
+    level_stat = models.ForeignKey(LevelStat, verbose_name=u"Уровень", related_name="answers", on_delete=models.CASCADE)
+    answer = models.CharField(max_length=1000, verbose_name=u"Ответ")
+    user = models.ForeignKey(User, verbose_name=u"Кто отправил")
+    right = models.BooleanField(default=False, verbose_name=u"Правильный")
+    bonus_time = models.IntegerField(verbose_name=u"Бонус(сек)", default=0)
+
+    def __unicode__(self):
+        return unicode(self.answer)
+
+    class Meta:
+        verbose_name_plural = u"Ответы"
+        verbose_name = u"Ответ"

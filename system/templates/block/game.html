@@ -25,7 +25,7 @@
         <div class="item">
             <b>Приняты к участию:</b> {{ game.teams.count }} команд:
             {% for participation in game.teams.all %}
-                <a href="#" class="ui">{{ participation.team.name }}</a>,
+                <a href="{% url 'team' participation.team.id  %}" class="ui">{{ participation.team.name }}</a>,
             {% endfor %}
         </div>
     </div>

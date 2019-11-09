@@ -17,7 +17,7 @@
                                 class="calendar plus outline icon"></i> {{ team.created_at|date:"d.m.Y" }}
                         </div>
                         <div class="meta">
-                            <b>Капитан: </b> <i class="user secret icon"></i> <a class="ui" href="#">{{ team.captain.username }}</a>
+                            <b>Капитан: </b> <i class="user secret icon"></i> <a class="ui" href="{% url 'user' team.captain.id  %}">{{ team.captain.username }}</a>
                         </div>
                         <div class="meta">
                             <b>Участников в команде: </b> <i class="users icon"></i> {{ team.members.count }}
@@ -39,7 +39,7 @@
                                     <div class="header">Капитан команды</div>
                                     <div class="ui list">
                                         <div class="item">
-                                            1. {% sex_icon team.captain.details.sex %} <a class="ui" href="#">{{ team.captain.username }}</a>
+                                            1. {% sex_icon team.captain.details.sex %} <a class="ui" href="{% url 'user' team.captain.id  %}">{{ team.captain.username }}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -51,7 +51,7 @@
                                         {% for member in team.members.all %}
                                             {% if member.user != team.captain %}
                                                 <div class="item">
-                                                    {{ forloop.counter|add:1 }}. {% sex_icon member.sex %} <a class="ui" href="#">{{ member.user.username }}</a>
+                                                    {{ forloop.counter|add:1 }}. {% sex_icon member.sex %} <a class="ui" href="{% url 'user' member.user.id  %}">{{ member.user.username }}</a>
                                                 </div>
                                             {% endif %}
                                         {% endfor %}
@@ -68,7 +68,7 @@
                                         <div class="ui list">
                                             {% for invitation in team.invitations.all %}
                                                 <div class="item">
-                                                    {{ forloop.counter }}. {% sex_icon invitation.user.details.sex %} <a class="ui" href="#">{{ invitation.user.username }}</a>
+                                                    {{ forloop.counter }}. {% sex_icon invitation.user.details.sex %} <a class="ui" href="{% url 'user' invitation.user.id  %}">{{ invitation.user.username }}</a>
                                                     <form action="{% url 'delete_invite' invitation.id %}" method="post" style="display: inline;">
                                                         {% csrf_token %}
                                                         <button name="uninvite" class="ui inverted mini red button">
@@ -115,7 +115,7 @@
                         <div class="ui list">
                             {% for invitation in invitations %}
                                 <div class="item">
-                                    {{ forloop.counter }}. <a class="ui" href="#">{{ invitation.team.name }}</a>
+                                    {{ forloop.counter }}. <a class="ui" href="{% url 'team' invitation.team.id  %}">{{ invitation.team.name }}</a>
                                     <form action="{% url 'delete_invite' invitation.id %}" method="post"
                                           style="display: inline;">
                                         {% csrf_token %}

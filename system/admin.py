@@ -32,6 +32,10 @@ class HintAdmin(MyAdmin):
 class BonusAdmin(MyAdmin):
     list_display = ["level", "order", "title", "bonus_time"]
 
+
+class LevelStatAdmin(MyAdmin):
+    list_display = ["level", "team", "started_at", "finished_at"]
+
 admin.site.register(Permission)
 admin.site.register(Team)
 admin.site.register(UserDetails)
@@ -42,3 +46,4 @@ admin.site.register(Hint, HintAdmin)
 admin.site.register(Bonus, BonusAdmin)
 admin.site.register(TeamInGame, TeamInGameAdmin)
 admin.site.register(PlayerInGame, PlayerInGameAdmin)
+admin.site.register(LevelStat, LevelStatAdmin)

@@ -126,3 +126,54 @@ a.ui {
 .game-answers form.ui{
     max-width: 200px;
 }
+
+.ui.list .ui.red.item {
+    color: red;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.ui.list .ui.green.item {
+    color: rgb(0, 189, 0);
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.ui.inverted.steps .step{
+    background: #313131;
+    border-right: 1px solid rgba(222, 222, 222, 0.15);
+    padding: 9px 16px;
+}
+
+.ui.inverted.steps .step a:hover{
+    text-decoration: underline;
+}
+
+.ui.inverted.steps .step.active{
+    background: #0f4873;
+}
+
+.ui.inverted.steps .step.active:after{
+    background: #0f4873;
+}
+
+.ui.inverted.steps .step.disabled{
+    background: #1f1f1f;
+}
+
+.ui.inverted.steps .step.disabled:after{
+    background: #1f1f1f;
+}
+
+.ui.inverted.steps .step:after{
+    background: #313131;
+    border-color: rgba(222, 222, 222, 0.15);
+}
+
+.ui.inverted.steps .step .content .title, .ui.inverted.steps .step .content .description{
+    color: #b4bfc3;
+}
+
+.ui.inverted.steps .step.disabled .content .title, .ui.inverted.steps .step.disabled .content .description{
+    color: #505050;
+}
