@@ -22,7 +22,7 @@ class BaseTeamView(BaseView):
 
 
 class MyTeamView(BaseView):
-    template_name = "teams/my_team.html"
+    template_name = "teams/team.html"
 
     def dispatch(self, request, *args, **kwargs):
         user_details = UserDetails.of(request.user)
@@ -30,6 +30,32 @@ class MyTeamView(BaseView):
         context = {
             'team': user_details.current_team,
             'invitations': request.user.invitations.all()
+        }
+        return render(request, self.template_name, context)
+
+
+class TeamView(BaseView):
+    template_name = "teams/team.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        team = Team.objects.get(pk=kwargs["team_id"])
+
+        context = {
+            'team': team
+        }
+        return render(request, self.template_name, context)
+
+
+class UserView(BaseView):
+    template_name = "registration/profile.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        user = User.objects.get(pk=kwargs["user_id"])
+        details = UserDetails.of(user)
+
+        context = {
+            'user': user,
+            'details': details
         }
         return render(request, self.template_name, context)
 
@@ -73,10 +99,11 @@ class InviteToTeamView(BaseTeamView):
                 keyword = request.POST.get("keyword", "")
                 context["keyword"] = keyword
                 context["search_result"] = True
-                context["users"] = User.objects.filter(Q(username=keyword) | Q(username__icontains=keyword) |
-                                                       Q(first_name__icontains=keyword) | Q(
-                    last_name__icontains=keyword)
-                                                       ).exclude(pk=request.user.id).exclude(pk__in=team.members.all())
+                context["users"] = User.objects.filter(Q(username=keyword) |
+                                                       Q(username__icontains=keyword) |
+                                                       Q(first_name__icontains=keyword) |
+                                                       Q(last_name__icontains=keyword))\
+                    .exclude(pk=request.user.id).exclude(pk__in=team.members.all())
             elif "invite" in request.POST:
                 user_id = request.POST.get("user", "")
                 try:

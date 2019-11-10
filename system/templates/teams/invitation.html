@@ -16,8 +16,8 @@
                             class="calendar plus outline icon"></i> {{ team.created_at|date:"d.m.Y" }}
                     </div>
                     <div class="meta">
-                        <b>Капитан: </b> <i class="user secret icon"></i> <a class="ui"
-                                                                             href="#">{{ team.captain.username }}</a>
+                        <b>Капитан: </b> <i class="user secret icon"></i>
+                        <a class="ui" href="{% url 'user' team.captain.id %}">{{ team.captain.username }}</a>
                     </div>
                     <div class="meta">
                         <b>Участников в команде: </b> <i class="users icon"></i> {{ team.members.count }}
@@ -38,10 +38,10 @@
                         <div class="two fields">
                             <div class="field">
                                 <label>Введите имя участника</label>
-                                <input type="text" class="ui input" name="keyword" value="{{ keyword }}">
+                                <input type="text" required minlength="2" class="ui input" name="keyword" value="{{ keyword }}">
                             </div>
                         </div>
-                        <button name="search" class="ui inverted submit button">Поиск</button>
+                        <button name="search" class="ui mini basic submit blue button">Поиск</button>
                     </form>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                                         <form method="post" style="display: inline; ">
                                             {% csrf_token %}
                                             <input type="hidden" name="user" value="{{ user.id }}">
-                                            <button name="invite" class="ui inverted mini red button">Пригласить</button>
+                                            <button name="invite" class="ui basic mini red button">Пригласить</button>
                                         </form>
                                     </div>
                                 {% endfor %}

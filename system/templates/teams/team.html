@@ -17,11 +17,19 @@
                                 class="calendar plus outline icon"></i> {{ team.created_at|date:"d.m.Y" }}
                         </div>
                         <div class="meta">
-                            <b>Капитан: </b> <i class="user secret icon"></i> <a class="ui" href="{% url 'user' team.captain.id  %}">{{ team.captain.username }}</a>
+                            <b>Капитан: </b> <i class="user secret icon"></i>
+                            <a class="ui" href="{% url 'user' team.captain.id %}">{{ team.captain.username }}</a>
                         </div>
                         <div class="meta">
                             <b>Участников в команде: </b> <i class="users icon"></i> {{ team.members.count }}
                         </div>
+
+                        {% if user == team.captain %}
+                            <a class="ui labeled mini basic yellow icon button"
+                               href="{% url 'invite_to_team' team.id %}">
+                                <i class="add user icon"></i> Пригласить участников
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -39,7 +47,8 @@
                                     <div class="header">Капитан команды</div>
                                     <div class="ui list">
                                         <div class="item">
-                                            1. {% sex_icon team.captain.details.sex %} <a class="ui" href="{% url 'user' team.captain.id  %}">{{ team.captain.username }}</a>
+                                            1. {% sex_icon team.captain.details.sex %}
+                                            <a class="ui" href="{% url 'user' team.captain.id %}">{{ team.captain.username }}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -51,14 +60,12 @@
                                         {% for member in team.members.all %}
                                             {% if member.user != team.captain %}
                                                 <div class="item">
-                                                    {{ forloop.counter|add:1 }}. {% sex_icon member.sex %} <a class="ui" href="{% url 'user' member.user.id  %}">{{ member.user.username }}</a>
+                                                    {{ forloop.counter|add:1 }}. {% sex_icon member.sex %}
+                                                    <a class="ui" href="{% url 'user' member.user.id %}">{{ member.user.username }}</a>
                                                 </div>
                                             {% endif %}
                                         {% endfor %}
                                     </div>
-                                    {% if user == team.captain %}
-                                        <a class="ui mini inverted button" href="{% url 'invite_to_team' team.id %}">Пригласить участников</a>
-                                    {% endif %}
                                 </div>
                             </div>
                             {% if team.invitations.count > 0 %}
@@ -68,13 +75,19 @@
                                         <div class="ui list">
                                             {% for invitation in team.invitations.all %}
                                                 <div class="item">
-                                                    {{ forloop.counter }}. {% sex_icon invitation.user.details.sex %} <a class="ui" href="{% url 'user' invitation.user.id  %}">{{ invitation.user.username }}</a>
-                                                    <form action="{% url 'delete_invite' invitation.id %}" method="post" style="display: inline;">
-                                                        {% csrf_token %}
-                                                        <button name="uninvite" class="ui inverted mini red button">
-                                                            Удалить приглашение
-                                                        </button>
-                                                    </form>
+                                                    {{ forloop.counter }}. {% sex_icon invitation.user.details.sex %}
+                                                    <a class="ui"  href="{% url 'user' invitation.user.id %}">
+                                                        {{ invitation.user.username }}
+                                                    </a>
+                                                    {% if user == team.captain %}
+                                                        <form action="{% url 'delete_invite' invitation.id %}" method="post"
+                                                              style="display: inline;">
+                                                            {% csrf_token %}
+                                                            <button name="uninvite" class="ui basic mini red button">
+                                                                Удалить приглашение
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
                                                 </div>
                                             {% endfor %}
                                         </div>
@@ -104,41 +117,41 @@
         </div>
     {% endif %}
 
-    <div class="ui inverted segment">
-        <div class="ui inverted items">
-            <div class="item">
-                <div class="image"></div>
-                <div class="content">
-                    <div class="header">Приглашения в другие команды</div>
-                    <hr>
-                    {% if invitations %}
+    {% if invitations %}
+        <div class="ui inverted segment">
+            <div class="ui inverted items">
+                <div class="item">
+                    <div class="image"></div>
+                    <div class="content">
+                        <div class="header">Приглашения в другие команды</div>
+                        <hr>
+
                         <div class="ui list">
                             {% for invitation in invitations %}
                                 <div class="item">
-                                    {{ forloop.counter }}. <a class="ui" href="{% url 'team' invitation.team.id  %}">{{ invitation.team.name }}</a>
+                                    {{ forloop.counter }}. <a class="ui"
+                                                              href="{% url 'team' invitation.team.id %}">{{ invitation.team.name }}</a>
                                     <form action="{% url 'delete_invite' invitation.id %}" method="post"
                                           style="display: inline;">
                                         {% csrf_token %}
-                                        <button name="uninvite" class="ui inverted mini red button">
+                                        <button name="uninvite" class="ui basic mini red button">
                                             Отказаться
                                         </button>
                                     </form>
                                     <form action="{% url 'accept_invite' invitation.id %}" method="post"
                                           style="display: inline;">
                                         {% csrf_token %}
-                                        <button name="uninvite" class="ui inverted mini green button">
+                                        <button name="uninvite" class="ui basic mini green button">
                                             Принять
                                         </button>
                                     </form>
                                 </div>
                             {% endfor %}
                         </div>
-                    {% else %}
-                        Приглашений нет
-                    {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
 {% endblock %}

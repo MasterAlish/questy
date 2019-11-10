@@ -23,17 +23,17 @@ from django.views import static
 from system.features.game import TakePartInGameView, GamesView, GameInfoView, PlayGameView, PlayGameLevelView, \
     FinishGameView, GameStatisticView, GameStatusView
 from system.features.teams import MyTeamView, CreateTeamView, InviteToTeamView, DeleteInvitationView, \
-    AcceptInvitationView
+    AcceptInvitationView, TeamView, UserView
 from system.views import auth_logout, HomeView, SetLangView, RegisterView, ProfileView
 
 urlpatterns = [
     url(r'^$', login_required(HomeView.as_view()), name="home"),
 
-    url(r'^user/(?P<team_id>\d+)/info/$', login_required(HomeView.as_view()), name="user"),
+    url(r'^user/(?P<user_id>\d+)/info/$', login_required(UserView.as_view()), name="user"),
 
     url(r'^my/team/$', login_required(MyTeamView.as_view()), name="my_team"),
     url(r'^team/new/$', login_required(CreateTeamView.as_view()), name="create_team"),
-    url(r'^team/(?P<team_id>\d+)/info/$', login_required(HomeView.as_view()), name="team"),
+    url(r'^team/(?P<team_id>\d+)/info/$', login_required(TeamView.as_view()), name="team"),
     url(r'^team/(?P<team_id>\d+)/invite/$', login_required(InviteToTeamView.as_view()), name="invite_to_team"),
     url(r'^team/delete_invite/(?P<id>\d+)/$', login_required(DeleteInvitationView.as_view()), name="delete_invite"),
     url(r'^team/accept_invite/(?P<id>\d+)/$', login_required(AcceptInvitationView.as_view()), name="accept_invite"),
