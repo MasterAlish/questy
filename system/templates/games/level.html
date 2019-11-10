@@ -2,18 +2,23 @@
 {% load my_filters i18n staticfiles %}
 
 {% block content %}
-    {% load staticfiles %}
     <div class="ui inverted segment game">
         <img style="max-width: 24px; float: left; margin-right: 10px;" src="{% static 'img/labyrinth.png' %}">
         <a href="{% url 'game_info' game.id %}" class="ui blue header">(#{{ game.id }}) "{{ game.title }}"</a>
-        <button onclick="$('#levels_pad').toggle();" style="float: right;" class="ui basic purple labeled mini icon button">
-            <i class="angle down icon"></i> Уровни
-        </button>
         <div style="clear: both;"></div>
         <div id="levels_pad" style="overflow-x: auto; padding-right: 20px; display: none;" >
             <hr>
             {% insert_game_levels game level my_team %}
         </div>
+    </div>
+    <div class="ui inverted segment game">
+        <button onclick="$('#levels_pad').toggle();"
+                class="ui basic purple labeled mini icon button">
+            <i class="flag checkered icon"></i> Уровни
+        </button>
+        <a target="_blank" href="{% url 'game_stats' game.id %}" style="display: inline-flex" class="ui basic pink labeled mini icon button">
+            <i class="chart bar icon"></i> Статистика
+        </a>
     </div>
     <div class="ui inverted segment game">
         <span class="ui blue header">Уровень №{{ level.order }}: {{ level.title }}</span>
@@ -32,7 +37,7 @@
                 <p>
                     <input name="answer" type="text" class="ui inverted input" placeholder="Введите ответ">
                 </p>
-                <button class="ui small inverted yellow button">Отправить</button>
+                <button class="ui mini basic yellow button">Отправить</button>
 
             </form>
         </div>

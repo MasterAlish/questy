@@ -2,7 +2,6 @@
 {% load my_filters i18n staticfiles %}
 
 {% block content %}
-    {% load staticfiles %}
     <div class="ui inverted segment game">
         <img style="max-width: 24px; float: left; margin-right: 10px;" src="{% static 'img/labyrinth.png' %}">
         <a href="{% url 'game_info' game.id %}" class="ui blue header">(#{{ game.id }}) "{{ game.title }}"</a>
@@ -13,6 +12,17 @@
             {% insert_game_levels game level my_team %}
         </div>
     </div>
+
+    <div class="ui inverted segment game">
+        <button onclick="$('#levels_pad').toggle();"
+                class="ui basic purple labeled mini icon button">
+            <i class="flag checkered icon"></i> Уровни
+        </button>
+        <a target="_blank" href="{% url 'game_stats' game.id %}" style="display: inline-flex" class="ui basic pink labeled mini icon button">
+            <i class="chart bar icon"></i> Статистика
+        </a>
+    </div>
+
     <div class="ui inverted segment">
         <div class="ui teal inverted icon message">
             <i class="checkmark icon"></i>

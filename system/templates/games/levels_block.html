@@ -5,7 +5,7 @@
             {% if level.order not in open_levels %} disabled {% endif %}
             ">
             <div class="content">
-                {% if level.order in open_levels %}
+                {% if level.order in open_levels and current_level.id != level.id %}
                     <a href="{% url 'play_level' game.id level.order %}" class="title">Уровень №{{ level.order }}</a>
                 {% else %}
                     <div class="title">Уровень №{{ level.order }}</div>

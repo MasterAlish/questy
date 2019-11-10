@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load my_filters i18n staticfiles %}
+
+{% block content %}
+    {% show_navbar 'games' user %}
+    {% show_messages messages %}
+
+    <div class="ui inverted segment game">
+        <img style="max-width: 24px; float: left; margin-right: 10px;" src="{% static 'img/labyrinth.png' %}">
+        <a href="{% url 'game_info' game.id %}" class="ui blue header">(#{{ game.id }}) "{{ game.title }}"</a>
+        <div style="clear: both;"></div>
+    </div>
+    <script>
+        function random_color(){
+            var letters = '123456789ABCDE';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 14)];
+            }
+            return color;
+        }
+
+        $(document).ready(function () {
+            $("td.team-place").on("click", function () {
+                var team = $(this).data("team");
+                var team_cells = $("td[data-team=\"" + team + "\"]");
+                if ($(this).hasClass("place-selected")) {
+                    team_cells.css("background", "#333");
+                    team_cells.removeClass("place-selected");
+                } else {
+                    team_cells.css("background", random_color());
+                    team_cells.addClass("place-selected");
+                }
+            })
+        });
+    </script>
+    <div class="ui inverted segment" style="overflow-x: auto;">
+        <table class="ui celled compact inverted table game-stats">
+            <tr class="center aligned">
+                <th></th>
+                {% for level in game.levels.all %}
+                    <th>{{ level.order }}. {{ level.title }}</th>
+                {% endfor %}
+                <th>Итоговое время</th>
+                <th>+ Бонусы - Штрафы</th>
+                <th></th>
+            </tr>
+            {% for row in game.teams.count|range %}
+                <tr class="center aligned">
+                    <td>{{ forloop.counter }}</td>
+                    {% for level in game.levels.all %}
+                        {% with level_placement|get:level.id as level_stats %}
+
+                            {% if row < level_stats|length %}
+                                {% with level_stats|nth:row as stat %}
+                                    <td class="team-place" data-team="{{ stat.team.id }}">
+                                        <a href="#" class="ui">{{ stat.team.name }}</a><br>
+                                        {{ stat.finished_at|date:"d.m.Y" }}<br>
+                                        {{ stat.finished_at|date:"H:i:s" }}<br>
+                                        ({{ stat.time_in_level|seconds_to_period }})
+                                    </td>
+                                {% endwith %}
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+
+                    {% if row < finish_placement|length %}
+                        {% with finish_placement|nth:row as stat %}
+                            <td class="team-place" data-team="{{ stat.team.id }}">
+                                <a href="#" class="ui">{{ stat.team.name }}</a><br>
+                                {{ stat.finished_at|date:"d.m.Y" }}<br>
+                                {{ stat.finished_at|date:"H:i:s" }}<br>
+                                ({{ stat.total_time|seconds_to_period }})
+                            </td>
+                        {% endwith %}
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+
+                    {% if row < finish_placement|length %}
+                        {% with finish_placement|nth:row as stat %}
+                            <td class="team-place" data-team="{{ stat.team.id }}">
+                                <a href="#" class="ui">{{ stat.team.name }}</a><br>
+                                {{ stat.finished_at|date:"d.m.Y" }}<br>
+                                {{ stat.finished_at|date:"H:i:s" }}<br>
+                                ({{ stat.total_time|seconds_to_period }})
+                            </td>
+                        {% endwith %}
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    <td>{{ forloop.counter }}</td>
+                </tr>
+            {% endfor %}
+            <tr class="center aligned">
+                <th></th>
+                {% for level in game.levels.all %}
+                    <th>{{ level.order }}. {{ level.title }}</th>
+                {% endfor %}
+                <th>Итоговое время</th>
+                <th>+ Бонусы - Штрафы</th>
+                <th></th>
+            </tr>
+        </table>
+    </div>
+{% endblock %}

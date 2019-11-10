@@ -1,3 +1,4 @@
+# coding=utf-8
 from datetime import datetime, time
 from hashlib import md5
 from django import template
@@ -41,7 +42,7 @@ def insert_play_menu(my_team, game, current_level=None):
     return {'game': game, 'my_team': my_team, 'current_level': current_level, 'answers': answers}
 
 
-@register.inclusion_tag('games/play_levels.html')
+@register.inclusion_tag('games/levels_block.html')
 def insert_game_levels(game, current_level, team):
     open_levels = LevelStat.objects.filter(level__game=game, team=team).values_list("level__order")
     open_levels = map(lambda l: l[0], open_levels)
@@ -95,6 +96,25 @@ def get(_map, key):
 @register.filter
 def items(map):
     return map.items()
+
+
+@register.filter(name="range")
+def range_filter(a):
+    return range(a)
+
+
+@register.filter
+def seconds_to_period(seconds):
+    minute = 60
+    hour = 60 * 60
+    day = hour * 24
+    if seconds > day:
+        return "%d дн. %d ч." % (seconds/day, seconds%day/hour)
+    if seconds > hour:
+        return "%d ч. %d м." % (seconds/hour, seconds%hour/minute)
+    if seconds > minute:
+        return "%d м. %d с." % (seconds/minute, seconds%minute)
+    return "%d с." % seconds
 
 
 @register.filter

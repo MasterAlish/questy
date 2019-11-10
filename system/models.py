@@ -62,6 +62,7 @@ class Game(models.Model):
     title = models.CharField(max_length=255, verbose_name=u"Название")
     content = RichTextField(verbose_name=u"Описание")
     starts_at = models.DateTimeField(verbose_name=u"Время начала")
+    finishes_at = models.DateTimeField(verbose_name=u"Время конца", null=True, blank=True)
     finished = models.BooleanField(default=False, verbose_name=u"Закончен")
     status = models.CharField(max_length=20, default="not_started", verbose_name=u"Состояние", choices=[
         ["not_started", u"Не начат"], ["started", u"Идет"], ["scoring", u"Подсчет очков"], ["finished", u"Закончен"],
@@ -151,6 +152,7 @@ class Bonus(models.Model):
 class TeamInGame(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, verbose_name=u"Игра", related_name="teams")
     team = models.ForeignKey(Team, on_delete=models.CASCADE, verbose_name=u"Команда", related_name="games")
+    finished = models.BooleanField(default=False, verbose_name=u"Закончили игру")
 
     class Meta:
         verbose_name_plural = u"Команды в игре"

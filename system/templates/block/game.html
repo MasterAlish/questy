@@ -9,23 +9,33 @@
         <div class="item"><b>Последовательность:</b> {{ game.get_sequence_display }}</div>
         <div class="item"><b>Начало игры:</b> {{ game.starts_at|date:"d.m.Y H:i" }}</div>
         <div class="item"><b>Времени осталось:</b> {{ game.starts_at|timeuntil }}</div>
-        {% if game.status == "not_started" %}
-            <form action="{% url 'take_part_in_game' game.id %}" method="post" class="item">
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ request.path }}">
-                <button class="ui mini inverted orange button">Подать заявку на участие</button>
-            </form>
-        {% endif %}
-        {% if game.ready_to_start and not game.finished %}
-            <a href="{% url 'play_game' game.id %}" class="ui mini inverted green button">Перейти к игре</a>
-        {% endif %}
     </div>
+    <hr>
+    {% if game.status == "not_started" %}
+        <form action="{% url 'take_part_in_game' game.id %}" method="post" class="item" style="display: inline-block;">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button class="ui mini basic orange button">Подать заявку на участие</button>
+        </form>
+    {% endif %}
+    {% if game.ready_to_start and not game.finished %}
+        <a href="{% url 'play_game' game.id %}" class="ui mini basic labeled green icon button">
+            <i class="puzzle icon"></i>
+            Перейти к игре
+        </a>
+    {% endif %}
+    {% if game.status != "not_started" %}
+        <a href="{% url 'game_stats' game.id %}"
+           class="ui basic pink labeled mini icon button">
+            <i class="chart bar icon"></i> Статистика
+        </a>
+    {% endif %}
     <hr>
     <div class="ui list">
         <div class="item">
             <b>Приняты к участию:</b> {{ game.teams.count }} команд:
             {% for participation in game.teams.all %}
-                <a href="{% url 'team' participation.team.id  %}" class="ui">{{ participation.team.name }}</a>,
+                <a href="{% url 'team' participation.team.id %}" class="ui">{{ participation.team.name }}</a>,
             {% endfor %}
         </div>
     </div>

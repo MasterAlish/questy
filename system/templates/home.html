@@ -2,8 +2,24 @@
 {% load my_filters i18n staticfiles %}
 
 {% block content %}
-    <h1 class="ui ">Предстоящие игры</h1>
-    {% for game in games %}
-        {% insert_game game request %}
-    {% endfor %}
+    {% if games_in_progress.count > 0 %}
+        <h1 class="ui ">Активные игры</h1>
+        {% for game in games_in_progress %}
+            {% insert_game game request %}
+        {% endfor %}
+    {% endif %}
+
+    {% if just_finished_games.count > 0 %}
+        <h1 class="ui ">Недавние игры</h1>
+        {% for game in just_finished_games %}
+            {% insert_game game request %}
+        {% endfor %}
+    {% endif %}
+
+    {% if games_in_future.count > 0 %}
+        <h1 class="ui ">Предстоящие игры</h1>
+        {% for game in games_in_future %}
+            {% insert_game game request %}
+        {% endfor %}
+    {% endif %}
 {% endblock %}

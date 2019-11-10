@@ -1,12 +1,15 @@
 # coding=utf-8
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.utils import translation
 from django.views.generic import TemplateView
-
+from django.utils import timezone
 from system.forms import RegistrationForm
 from system.models import UserDetails, Game
 
@@ -50,8 +53,16 @@ class HomeView(BaseView):
     template_name = "home.html"
 
     def dispatch(self, request, *args, **kwargs):
-        games = Game.objects.filter(finished=False)
-        return render(request, self.template_name, {'games': games})
+        games_in_progress = Game.objects.filter(status="started")
+        games_in_future = Game.objects.filter(status="not_started")
+        six_hours_ago = timezone.now() - timedelta(hours=6)
+        just_finished_games = Game.objects.filter(Q(status="finished") | Q(status="scoring")).filter(
+            finishes_at__gt=six_hours_ago)
+        return render(request, self.template_name, {
+            'games_in_progress': games_in_progress,
+            'games_in_future': games_in_future,
+            'just_finished_games': just_finished_games
+        })
 
 
 class RegisterView(BaseView):

@@ -177,3 +177,8 @@ a.ui {
 .ui.inverted.steps .step.disabled .content .title, .ui.inverted.steps .step.disabled .content .description{
     color: #505050;
 }
+
+.ui.table.game-stats td, .ui.table.game-stats th{
+    font-size: 11px;
+    line-height: 1.3em;
+}

@@ -1,8 +1,13 @@
 # coding=utf-8
+from datetime import timedelta
+
 from django.contrib import messages
+from django.db.models import Q
 from django.http import Http404
+from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils import timezone
 
 from system.features.levels import LevelManager
 from system.models import TeamInGame, Game, UserDetails, GameLevel, LevelStat, Answer
@@ -13,8 +18,16 @@ class GamesView(BaseView):
     template_name = "games/all_games.html"
 
     def dispatch(self, request, *args, **kwargs):
-        games = Game.objects.filter(finished=False)
-        return render(request, self.template_name, {'games': games})
+        games_in_progress = Game.objects.filter(status="started")
+        games_in_future = Game.objects.filter(status="not_started")
+        six_hours_ago = timezone.now() - timedelta(hours=6)
+        just_finished_games = Game.objects.filter(Q(status="finished") | Q(status="scoring")).filter(
+            finishes_at__gt=six_hours_ago)
+        return render(request, self.template_name, {
+            'games_in_progress': games_in_progress,
+            'games_in_future': games_in_future,
+            'just_finished_games': just_finished_games
+        })
 
 
 class GameInfoView(BaseView):
@@ -33,7 +46,6 @@ class TakePartInGameView(BaseView):
             if request.user.teams_i_lead.count() > 0:
                 team = request.user.teams_i_lead.first()
                 part, created = TeamInGame.objects.get_or_create(game=game, team=team)
-                LevelManager(game, team).init_participation()
                 if created:
                     messages.success(request, u"Ваша команда \"%s\" принята к участию в этой игре" % team.name)
                 else:
@@ -77,8 +89,10 @@ class PlayGameView(BasePlayView):
         if not self.user_can_play(game):
             messages.error(request, u"Вы не участвуете в этой игре")
             return redirect(reverse("home"))
-        if not game.finished and game.starts_in() < 1:
+        if game.status == "started":
             if self.team_finished_the_game(user_details.current_team, game=game):
+                if TeamInGame.objects.filter(team=user_details.current_team, game=game, finished=False).exists():
+                    TeamInGame.objects.filter(team=user_details.current_team, game=game).update(finished=True)
                 return redirect(reverse("finish_game", kwargs={'game_id': game.id}))
             current_level = self.get_current_level(game, user_details.current_team)
 
@@ -112,6 +126,9 @@ class PlayGameLevelView(BasePlayView):
             return False, redirect(reverse("home"))
         if not self.user_has_access_level(level, user_details):
             messages.error(self.request, u"У вас нет доступа на этот уровень")
+            return False, redirect(reverse("play_game", kwargs={'game_id': game.id}))
+        if not game.status == "started":
+            messages.error(self.request, u"Игра завершена")
             return False, redirect(reverse("play_game", kwargs={'game_id': game.id}))
         return True, None
 
@@ -178,3 +195,80 @@ class FinishGameView(BasePlayView):
         if not_finished_level_stats.exists():
             return not_finished_level_stats.first().level
         return game.levels.first()
+
+
+class GameStatisticView(BasePlayView):
+    template_name = "games/statistics.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        game = self.get_game(**kwargs)
+        user_details = UserDetails.of(self.request.user)
+
+        if not game.finished and not self.user_can_play(game):
+            messages.error(request, u"Статистика еще не доступна")
+            return redirect(reverse("game_info", kwargs={'game_id': game.id}))
+
+        level_placement, finish_placement = self.get_stats(game)
+
+        context = {
+            'game': game,
+            'level_placement': level_placement,
+            'finish_placement': finish_placement
+        }
+        return render(request, self.template_name, context)
+
+    def get_current_level(self, game, team):
+        not_finished_level_stats = LevelStat.objects.filter(level__game=game, team=team, finished_at__isnull=True)
+        if not_finished_level_stats.exists():
+            return not_finished_level_stats.first().level
+        return game.levels.first()
+
+    def get_stats(self, game):
+        level_placement = {}
+        teams_time = {}
+        teams_finish_time = {}
+        teams_levels_done = {}
+        for participant in game.teams.all():
+            teams_time[participant.team_id] = 0
+            teams_finish_time[participant.team_id] = None
+            teams_levels_done[participant.team_id] = 0
+
+        for level in game.levels.all():
+            level_stats = level.stats.filter(finished_at__isnull=False)
+            teams = []
+            for level_stat in level_stats:
+                teams_time[level_stat.team_id] += level_stat.time_in_level
+                teams.append({
+                    'team': level_stat.team,
+                    'total_time': teams_time[level_stat.team_id],
+                    'finished_at': level_stat.finished_at,
+                    'time_in_level': level_stat.time_in_level,
+                })
+                teams_finish_time[level_stat.team_id] = level_stat.finished_at
+                teams_levels_done[level_stat.team_id] += 1
+            teams = sorted(teams, key=lambda t: t['total_time'])
+
+            level_placement[level.id] = teams
+        finish_placement = []
+        for participant in game.teams.all():
+            if teams_finish_time[participant.team_id]:
+                finish_placement.append({
+                    'team': participant.team,
+                    'levels_done': teams_levels_done[participant.team_id],
+                    'total_time': teams_time[participant.team_id],
+                    'finished_at': teams_finish_time[participant.team_id],
+                })
+        finish_placement = sorted(finish_placement, key=lambda t: t['total_time'])
+        finish_placement = sorted(finish_placement, key=lambda t: t['levels_done'], reverse=True)
+
+        return level_placement, finish_placement
+
+
+class GameStatusView(BasePlayView):
+
+    def dispatch(self, request, *args, **kwargs):
+        game = self.get_game(**kwargs)
+        user_details = UserDetails.of(self.request.user)
+        if not self.user_can_play(game):
+            raise Http404()
+        return HttpResponse(game.status)

@@ -8,29 +8,63 @@
         <a href="{% url 'game_info' game.id %}" class="ui blue header">(#{{ game.id }}) "{{ game.title }}"</a>
         <div style="clear: both;"></div>
     </div>
-    <script>
-        $(document).ready(function () {
-            var starts_in = {{ game.starts_in }}+100;
-            setInterval(function () {
-                starts_in -= 1;
-                $("#seconds_left").text(starts_in);
-                if(starts_in < 1){
-                    window.location.reload();
-                }
-            }, 1000)
-        })
-    </script>
-    <div class="ui inverted segment">
-        <div class="ui inline red inverted statistic">
-            <div class="label">
-                До начала игры осталось
-            </div>
-            <div id="seconds_left" class="value">
-                5
-            </div>
-            <div class="label">
-                Секунд
+    {% if game.status == "not_started" %}
+        <script>
+            var readyToCheckStatus = true;
+
+            function checkGameStatus() {
+                readyToCheckStatus = false;
+                $.get("{% url 'game_status' game.id %}", [], function (response) {
+                    if (response === "started") {
+                        window.location.reload();
+                    } else {
+                        readyToCheckStatus = true;
+                    }
+                })
+            }
+
+            $(document).ready(function () {
+                var starts_in = {{ game.starts_in }};
+                setInterval(function () {
+                    starts_in -= 1;
+                    if (starts_in >= 0) {
+                        $("#seconds_left").text(starts_in);
+                    } else {
+                        $("#seconds_left").text("Совсем немного");
+                    }
+                    if (starts_in < 1 && readyToCheckStatus) {
+                        checkGameStatus();
+                    }
+                }, 1000)
+            })
+        </script>
+    {% endif %}
+
+    {% if game.status == "not_started" %}
+        <div class="ui inverted segment">
+            <div class="ui inline red inverted statistic">
+                <div class="label">
+                    До начала игры осталось
+                </div>
+                <div id="seconds_left" class="value">
+                    {{ game.starts_in }}
+                </div>
+                <div class="label">
+                    Секунд
+                </div>
             </div>
         </div>
-    </div>
+    {% elif game.status == "finished" or game.status == "scoring" %}
+        <div class="ui inverted segment">
+            <div class="ui inline red inverted statistic">
+                <div class="label">
+                    Игра
+                </div>
+                <div id="seconds_left" class="value">
+                    Закончена
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock %}

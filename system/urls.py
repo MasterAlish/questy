@@ -21,7 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.views import static
 
 from system.features.game import TakePartInGameView, GamesView, GameInfoView, PlayGameView, PlayGameLevelView, \
-    FinishGameView
+    FinishGameView, GameStatisticView, GameStatusView
 from system.features.teams import MyTeamView, CreateTeamView, InviteToTeamView, DeleteInvitationView, \
     AcceptInvitationView
 from system.views import auth_logout, HomeView, SetLangView, RegisterView, ProfileView
@@ -44,7 +44,9 @@ urlpatterns = [
     url(r'^game/(?P<game_id>\d+)/play/$', login_required(PlayGameView.as_view()), name="play_game"),
     url(r'^game/(?P<game_id>\d+)/level/(?P<level>\d+)/play/$', login_required(PlayGameLevelView.as_view()),
         name="play_level"),
-    url(r'^game/(?P<game_id>\d+)/finish/$', login_required(FinishGameView.as_view()),name="finish_game"),
+    url(r'^game/(?P<game_id>\d+)/finish/$', login_required(FinishGameView.as_view()), name="finish_game"),
+    url(r'^game/(?P<game_id>\d+)/statistics/$', login_required(GameStatisticView.as_view()), name="game_stats"),
+    url(r'^game/(?P<game_id>\d+)/status/$', login_required(GameStatusView.as_view()), name="game_status"),
 
     url(r'^accounts/login/', auth_views.login, name="my_login"),
     url(r'^accounts/logout/$', auth_logout, name="logout"),
@@ -57,7 +59,3 @@ urlpatterns = [
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
     url(r'^media/(?P<path>.*)$', static.serve, {'document_root': settings.MEDIA_ROOT}),
 ]
-
-
-
-
