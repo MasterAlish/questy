@@ -4,6 +4,7 @@ from hashlib import md5
 from django import template
 from django.db.models import Sum
 from django.utils import timezone
+from slugify import slugify
 
 from system.models import Game, Answer, LevelStat
 
@@ -129,12 +130,12 @@ def if_none(value, default):
 
 @register.filter
 def gravatar(value):
-    return "https://www.gravatar.com/avatar/%s?d=robohash&s=256" % md5(value).hexdigest()
+    return "https://www.gravatar.com/avatar/%s?d=robohash&s=256" % md5(slugify(value)).hexdigest()
 
 
 @register.filter
 def gravatar_pattern(value):
-    return "https://www.gravatar.com/avatar/%s?d=identicon&s=256" % md5(value).hexdigest()
+    return "https://www.gravatar.com/avatar/%s?d=identicon&s=256" % md5(slugify(value)).hexdigest()
 
 
 @register.inclusion_tag("block/pagination.html")

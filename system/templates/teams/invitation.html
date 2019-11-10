@@ -17,7 +17,11 @@
                     </div>
                     <div class="meta">
                         <b>Капитан: </b> <i class="user secret icon"></i>
-                        <a class="ui" href="{% url 'user' team.captain.id %}">{{ team.captain.username }}</a>
+                        {% if team.captain %}
+                            <a class="ui" href="{% url 'user' team.captain.id %}">{{ team.captain.username }}</a>
+                        {% else %}
+                            без капитана
+                        {% endif %}
                     </div>
                     <div class="meta">
                         <b>Участников в команде: </b> <i class="users icon"></i> {{ team.members.count }}

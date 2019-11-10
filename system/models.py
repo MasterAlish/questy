@@ -15,7 +15,14 @@ from django.utils.translation import ugettext_lazy as _
 class Team(models.Model):
     name = models.CharField(max_length=100, verbose_name=u"Название", unique=True)
     created_at = models.DateField(auto_now_add=True, verbose_name=u"Дата создания")
-    captain = models.ForeignKey(User, verbose_name=u"Капитан", on_delete=models.CASCADE, related_name="teams_i_lead")
+    created_by = models.ForeignKey(User, verbose_name=u"Создатель", null=True, blank=True, on_delete=models.SET_NULL,
+                                   related_name="my_teams")
+
+    def captain(self):
+        caps = self.members.filter(is_cap=True)
+        if caps.count() > 0:
+            return caps.first().user
+        return None
 
     def __unicode__(self):
         return self.name
@@ -30,6 +37,7 @@ class UserDetails(models.Model):
     phone_number = models.CharField(max_length=100, verbose_name=u"Номер телефона", null=True, blank=True)
     current_team = models.ForeignKey(Team, null=True, blank=True, verbose_name=u"Текущая команда",
                                      on_delete=models.SET_NULL, related_name="members")
+    is_cap = models.BooleanField(default=False, verbose_name=u"Капитан своей команды")
     weight = models.IntegerField(null=True, blank=True, verbose_name=u"Вес(кг)")
     height = models.IntegerField(null=True, blank=True, verbose_name=u"Роск(см)")
     sex = models.CharField(default="male", choices=[["male", u"Мужской"], ["female", u"Женский"]], verbose_name=u"Пол",

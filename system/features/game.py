@@ -41,10 +41,11 @@ class GameInfoView(BaseView):
 class TakePartInGameView(BaseView):
     def dispatch(self, request, *args, **kwargs):
         if request.method == "POST":
+            user_details = UserDetails.of(request.user)
             game = Game.objects.get(pk=kwargs["game_id"])
             redirect_to = request.POST.get("next", "/")
-            if request.user.teams_i_lead.count() > 0:
-                team = request.user.teams_i_lead.first()
+            if user_details.is_cap and user_details.current_team:
+                team = user_details.current_team
                 part, created = TeamInGame.objects.get_or_create(game=game, team=team)
                 if created:
                     messages.success(request, u"Ваша команда \"%s\" принята к участию в этой игре" % team.name)

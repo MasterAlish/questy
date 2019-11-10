@@ -13,12 +13,16 @@ from system.views import BaseView
 
 class BaseTeamView(BaseView):
     def assert_user_is_cap(self, team):
-        if team.captain_id != self.request.user.id:
+        if not self.user_is_cap(team):
             raise Http404()
 
     def assert_user_can_delete_invite(self, invitation):
-        if invitation.team.captain_id != self.request.user.id and invitation.user_id != self.request.user.id:
+        if not self.user_is_cap(invitation.team) and invitation.user_id != self.request.user.id:
             raise Http404()
+
+    def user_is_cap(self, team):
+        user_details = UserDetails.of(self.request.user)
+        return team == user_details.current_team and user_details.is_cap
 
 
 class MyTeamView(BaseView):
@@ -68,7 +72,7 @@ class CreateTeamView(BaseView):
         if request.method == 'POST':
             form = TeamForm(request.POST)
             if form.is_valid():
-                form.instance.captain = request.user
+                form.instance.created_by = request.user
                 form.save()
                 self.check_current_team(request.user, form.instance)
                 return redirect(reverse("my_team"))
@@ -81,6 +85,7 @@ class CreateTeamView(BaseView):
         user_details = UserDetails.of(user)
         if not user_details.current_team:
             user_details.current_team = team
+            user_details.is_cap = True
             user_details.save()
 
 
@@ -97,13 +102,15 @@ class InviteToTeamView(BaseTeamView):
         if request.method == "POST":
             if "search" in request.POST:
                 keyword = request.POST.get("keyword", "")
+                member_user_ids = map(lambda m: m[0], team.members.values_list("user_id"))
                 context["keyword"] = keyword
                 context["search_result"] = True
                 context["users"] = User.objects.filter(Q(username=keyword) |
                                                        Q(username__icontains=keyword) |
                                                        Q(first_name__icontains=keyword) |
                                                        Q(last_name__icontains=keyword))\
-                    .exclude(pk=request.user.id).exclude(pk__in=team.members.all())
+                    .exclude(pk=request.user.id) \
+                    .exclude(pk__in=member_user_ids)
             elif "invite" in request.POST:
                 user_id = request.POST.get("user", "")
                 try:
@@ -139,9 +146,21 @@ class AcceptInvitationView(BaseTeamView):
         if invitation.user_id != request.user.id:
             raise Http404()
         user_details = UserDetails.of(request.user)
+        old_team = user_details.current_team
+
         user_details.current_team = invitation.team
+        user_details.is_cap = False
         user_details.save()
         invitation.delete()
 
+        self.validate_team_cap(old_team)
+        self.validate_team_cap(user_details.current_team)
+
         messages.success(request, u"Вы теперь в составе команды %s" % user_details.current_team.name)
         return redirect(reverse("my_team"))
+
+    def validate_team_cap(self, team):
+        if team and not team.members.filter(is_cap=True).exists():
+            if team.members.all().exists():
+                new_cap = team.members.first()
+                new_cap.is_cap = True

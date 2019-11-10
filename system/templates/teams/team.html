@@ -18,7 +18,11 @@
                         </div>
                         <div class="meta">
                             <b>Капитан: </b> <i class="user secret icon"></i>
-                            <a class="ui" href="{% url 'user' team.captain.id %}">{{ team.captain.username }}</a>
+                            {% if team.captain %}
+                                <a class="ui" href="{% url 'user' team.captain.id %}">{{ team.captain.username }}</a>
+                            {% else %}
+                                без капитана
+                            {% endif %}
                         </div>
                         <div class="meta">
                             <b>Участников в команде: </b> <i class="users icon"></i> {{ team.members.count }}
@@ -46,10 +50,12 @@
                                 <div class="content">
                                     <div class="header">Капитан команды</div>
                                     <div class="ui list">
-                                        <div class="item">
-                                            1. {% sex_icon team.captain.details.sex %}
-                                            <a class="ui" href="{% url 'user' team.captain.id %}">{{ team.captain.username }}</a>
-                                        </div>
+                                        {% if team.captain %}
+                                            <div class="item">
+                                                1. {% sex_icon team.captain.details.sex %}
+                                                <a class="ui" href="{% url 'user' team.captain.id %}">{{ team.captain.username }}</a>
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -110,7 +116,7 @@
                         <div class="header">Команда</div>
                         <hr>
                         Вы не состоите ни в какой команде в данный момент <br><br>
-                        <a class="ui mini inverted button" href="{% url 'create_team' %}">Создать свою команду</a>
+                        <a class="ui mini basic blue button" href="{% url 'create_team' %}">Создать свою команду</a>
                     </div>
                 </div>
             </div>
