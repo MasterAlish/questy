@@ -19,7 +19,7 @@ class Command(BaseCommand):
 
     def check_starting_games(self):
         now = timezone.now()
-        games_to_start = Game.objects.filter(status="not_started", starts_at__lte=now)
+        games_to_start = Game.objects.filter(active=True, status="not_started", starts_at__lte=now)
         for game in games_to_start:
             print ("Game #%d started\n" % game.id)
             logger.info("Game #%d started" % game.id)
@@ -29,7 +29,7 @@ class Command(BaseCommand):
         games_to_start.update(status="started")
 
     def check_finishing_games(self):
-        games_in_progress = Game.objects.filter(status="started")
+        games_in_progress = Game.objects.filter(active=True, status="started")
         for game in games_in_progress:
             if not game.teams.filter(finished=False).exists():
                 print ("Game #%d finished\n" % game.id)

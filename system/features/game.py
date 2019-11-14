@@ -14,27 +14,36 @@ from system.models import TeamInGame, Game, UserDetails, GameLevel, LevelStat, A
 from system.views import BaseView
 
 
+class BaseGameView(BaseView):
+    def user_can_view_game(self, game):
+        return game.active or game.author == self.request.user
+
+
 class GamesView(BaseView):
     template_name = "games/all_games.html"
 
     def dispatch(self, request, *args, **kwargs):
-        games_in_progress = Game.objects.filter(status="started")
-        games_in_future = Game.objects.filter(status="not_started")
+        my_draft_games = Game.objects.filter(active=False, author=request.user)
+        games_in_progress = Game.objects.filter(active=True, status="started")
+        games_in_future = Game.objects.filter(active=True, status="not_started")
         six_hours_ago = timezone.now() - timedelta(hours=6)
         just_finished_games = Game.objects.filter(Q(status="finished") | Q(status="scoring")).filter(
-            finishes_at__gt=six_hours_ago)
+            finishes_at__gt=six_hours_ago, active=True)
         return render(request, self.template_name, {
+            'my_draft_games': my_draft_games,
             'games_in_progress': games_in_progress,
             'games_in_future': games_in_future,
             'just_finished_games': just_finished_games
         })
 
 
-class GameInfoView(BaseView):
+class GameInfoView(BaseGameView):
     template_name = "games/game_info.html"
 
     def dispatch(self, request, *args, **kwargs):
         game = Game.objects.get(pk=kwargs["game_id"])
+        if not self.user_can_view_game(game):
+            raise Http404()
         return render(request, self.template_name, {'game': game})
 
 
@@ -43,27 +52,45 @@ class TakePartInGameView(BaseView):
         if request.method == "POST":
             user_details = UserDetails.of(request.user)
             game = Game.objects.get(pk=kwargs["game_id"])
+            if not game.active:
+                raise Http404()
             redirect_to = request.POST.get("next", "/")
-            if user_details.is_cap and user_details.current_team:
-                team = user_details.current_team
-                part, created = TeamInGame.objects.get_or_create(game=game, team=team)
-                if created:
-                    messages.success(request, u"Ваша команда \"%s\" принята к участию в этой игре" % team.name)
+            if request.user != game.author:
+                if user_details.is_cap and user_details.current_team:
+                    team = user_details.current_team
+                    restricted = self.check_team_restrictions_for_game(team, game)
+                    if not restricted:
+                        part, created = TeamInGame.objects.get_or_create(game=game, team=team)
+                        if created:
+                            messages.success(request, u"Ваша команда \"%s\" принята к участию в этой игре" % team.name)
+                        else:
+                            messages.info(request, u"Ваша команда уже участвует в этой игре")
                 else:
-                    messages.info(request, u"Ваша команда уже участвует в этой игре")
+                    messages.error(request, u"Вы должны быть капитаном команды чтобы принять участие")
             else:
-                messages.error(request, u"Вы должны капитаном команды чтобы принять участие")
+                messages.error(request, u"Автор игры не может участвовать в игре")
             return redirect(redirect_to)
         return redirect(reverse("home"))
 
+    def check_team_restrictions_for_game(self, team, game):
+        if game.min_players and game.min_players > team.members.count():
+            messages.error(self.request, u"В команде должно быть минимум %d участника" % game.min_players)
+            return True
+        if game.max_players and game.max_players < team.members.count():
+            messages.error(self.request, u"В команде должно быть максимум %d участника" % game.max_players)
+            return True
+        return False
 
-class BasePlayView(BaseView):
+
+class BasePlayView(BaseGameView):
     def user_can_play(self, game):
         user_details = UserDetails.of(self.request.user)
-        return TeamInGame.objects.filter(team=user_details.current_team, game=game).exists()
+        is_author = game.author == self.request.user
+        return is_author or TeamInGame.objects.filter(team=user_details.current_team, game=game).exists()
 
     def user_has_access_level(self, level, user_details):
-        return LevelStat.objects.filter(level=level, team=user_details.current_team).exists()
+        is_author = level.game.author == user_details.user
+        return is_author or LevelStat.objects.filter(level=level, team=user_details.current_team).exists()
 
     def team_finished_the_game(self, team, game):
         finished_levels = LevelStat.objects.filter(level__game=game, team=team, finished_at__isnull=False).count()
@@ -87,23 +114,27 @@ class PlayGameView(BasePlayView):
         game = self.get_game(**kwargs)
         user_details = UserDetails.of(self.request.user)
 
+        if not self.user_can_view_game(game):
+            return redirect(reverse("home"))
         if not self.user_can_play(game):
             messages.error(request, u"Вы не участвуете в этой игре")
             return redirect(reverse("home"))
-        if game.status == "started":
-            if self.team_finished_the_game(user_details.current_team, game=game):
-                if TeamInGame.objects.filter(team=user_details.current_team, game=game, finished=False).exists():
-                    TeamInGame.objects.filter(team=user_details.current_team, game=game).update(finished=True)
-                return redirect(reverse("finish_game", kwargs={'game_id': game.id}))
-            current_level = self.get_current_level(game, user_details.current_team)
+        if game.active:
+            if game.status == "started":
+                if self.team_finished_the_game(user_details.current_team, game=game):
+                    if TeamInGame.objects.filter(team=user_details.current_team, game=game, finished=False).exists():
+                        TeamInGame.objects.filter(team=user_details.current_team, game=game).update(finished=True)
+                    return redirect(reverse("finish_game", kwargs={'game_id': game.id}))
+                current_level = self.get_current_level(game, user_details.current_team)
 
-            if self.user_has_access_level(current_level, user_details):
-                return redirect(reverse("play_level", kwargs={
-                    'game_id': game.id,
-                    'level': current_level.order
-                }))
-            messages.error(request, u"У вас нет доступа к этой игре")
-            return redirect(reverse("home"))
+                if self.user_has_access_level(current_level, user_details):
+                    return redirect(reverse("play_level", kwargs={
+                        'game_id': game.id,
+                        'level': current_level.order
+                    }))
+            elif not game.ready_to_start() and not game.author == request.user:
+                messages.error(request, u"У вас нет доступа к этой игре")
+                return redirect(reverse("home"))
 
         context = {
             'game': game,
@@ -122,14 +153,16 @@ class PlayGameLevelView(BasePlayView):
     template_name = "games/level.html"
 
     def check_restriction(self, game, level, user_details):
+        if not self.user_can_view_game(game):
+            return False, redirect(reverse("home"))
         if not self.user_can_play(game):
             messages.error(self.request, u"Вы не участвуете в этой игре")
             return False, redirect(reverse("home"))
         if not self.user_has_access_level(level, user_details):
             messages.error(self.request, u"У вас нет доступа на этот уровень")
             return False, redirect(reverse("play_game", kwargs={'game_id': game.id}))
-        if not game.status == "started":
-            messages.error(self.request, u"Игра завершена")
+        if not game.status == "started" and game.author != user_details.user:
+            messages.error(self.request, u"Игра не активна")
             return False, redirect(reverse("play_game", kwargs={'game_id': game.id}))
         return True, None
 
@@ -144,9 +177,14 @@ class PlayGameLevelView(BasePlayView):
 
         if request.method == "POST":
             answer = request.POST.get("answer", "")
-            right_answer = self.dispatch_answer(game, level, answer, user_details)
-            if right_answer:
+            right = level.is_answer_right(answer)
+            if game.active and game.status == "started" and game.author != request.user:
+                self.save_answer(game, level, answer, right, user_details)
+            if right:
+                messages.success(self.request, u"Ответ правильный!")
                 return redirect(reverse("play_game", kwargs={'game_id': game.id}))
+            else:
+                messages.error(self.request, u"Ответ неправильный")
             return redirect(reverse("play_level", kwargs={
                 'game_id': game.id,
                 'level': level.order
@@ -159,17 +197,12 @@ class PlayGameLevelView(BasePlayView):
         }
         return render(request, self.template_name, context)
 
-    def dispatch_answer(self, game, level, answer, user_details):
-        right = level.is_answer_right(answer)
+    def save_answer(self, game, level, answer, right, user_details):
         stat = LevelStat.objects.get(level=level, team=user_details.current_team)
         Answer.objects.create(level_stat=stat, answer=answer, right=right, user=user_details.user)
         if right:
             manager = LevelManager(level.game, user_details.current_team)
             manager.check_level_finished(stat)
-            messages.success(self.request, u"Ответ правильный!")
-        else:
-            messages.error(self.request, u"Ответ неправильный")
-        return right
 
 
 class FinishGameView(BasePlayView):

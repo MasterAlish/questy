@@ -38,7 +38,11 @@ class LevelStatAdmin(MyAdmin):
 
 
 class GameAdmin(MyAdmin):
-    list_display = ["title", "status", "starts_at", "finished"]
+    list_display = ["title", "status", "active", "starts_at", "finished"]
+
+
+class AnswerAdmin(MyAdmin):
+    list_display = ["level_stat", "answer", "user", "right", "created_at"]
 
 admin.site.register(Permission)
 admin.site.register(Team)
@@ -51,3 +55,4 @@ admin.site.register(Bonus, BonusAdmin)
 admin.site.register(TeamInGame, TeamInGameAdmin)
 admin.site.register(PlayerInGame, PlayerInGameAdmin)
 admin.site.register(LevelStat, LevelStatAdmin)
+admin.site.register(Answer, AnswerAdmin)

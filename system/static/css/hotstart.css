@@ -110,8 +110,8 @@ a.ui {
 }
 
 .game-content p {
-    margin-block-start: 5px;
-    margin-block-end: 5px;
+    margin-block-start: 10px;
+    margin-block-end: 10px;
 }
 
 .game .ui.list .item {

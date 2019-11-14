@@ -29,7 +29,7 @@ def show_messages(messages):
 
 @register.inclusion_tag('block/side_menu.html')
 def insert_side_menu(user):
-    finished_games = Game.objects.filter(finished=True)
+    finished_games = Game.objects.filter(active=True, finished=True)
     return {'user': user, 'finished_games': finished_games}
 
 
@@ -44,9 +44,13 @@ def insert_play_menu(my_team, game, current_level=None):
 
 
 @register.inclusion_tag('games/levels_block.html')
-def insert_game_levels(game, current_level, team):
-    open_levels = LevelStat.objects.filter(level__game=game, team=team).values_list("level__order")
-    open_levels = map(lambda l: l[0], open_levels)
+def insert_game_levels(game, current_level, team, show_all=False):
+    if show_all:
+        levels = game.levels.all().values_list("order")
+        open_levels = map(lambda l: l[0], levels)
+    else:
+        open_levels = LevelStat.objects.filter(level__game=game, team=team).values_list("level__order")
+        open_levels = map(lambda l: l[0], open_levels)
     return {'game': game, 'team': team, 'current_level': current_level, 'open_levels': open_levels}
 
 

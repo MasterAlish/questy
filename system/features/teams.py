@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from system.forms import TeamForm
-from system.models import UserDetails, Invitation, Team
+from system.models import UserDetails, Invitation, Team, TeamInGame
 from system.views import BaseView
 
 
@@ -112,19 +112,27 @@ class InviteToTeamView(BaseTeamView):
                     .exclude(pk=request.user.id) \
                     .exclude(pk__in=member_user_ids)
             elif "invite" in request.POST:
-                user_id = request.POST.get("user", "")
-                try:
-                    user = User.objects.get(pk=user_id)
-                    invitation, created = Invitation.objects.get_or_create(team=team, user=user)
-                    if created:
-                        messages.success(request, u"Приглашение успешно отправлено")
-                    else:
-                        messages.warning(request, u"Участник уже приглашен")
+                active_games = self.get_active_games_of(team)
+                if active_games:
+                    messages.error(request, u"Во время игры нельзя приглашать участников в команду")
                     return redirect(reverse("my_team"))
-                except Exception as e:
-                    return redirect(reverse("my_team"))
+                else:
+                    user_id = request.POST.get("user", "")
+                    try:
+                        user = User.objects.get(pk=user_id)
+                        invitation, created = Invitation.objects.get_or_create(team=team, user=user)
+                        if created:
+                            messages.success(request, u"Приглашение успешно отправлено")
+                        else:
+                            messages.warning(request, u"Участник уже приглашен")
+                        return redirect(reverse("my_team"))
+                    except Exception as e:
+                        return redirect(reverse("my_team"))
 
         return render(request, self.template_name, context)
+
+    def get_active_games_of(self, team):
+        return TeamInGame.objects.filter(team=team, game__status="started").count()
 
 
 class DeleteInvitationView(BaseTeamView):
@@ -148,15 +156,19 @@ class AcceptInvitationView(BaseTeamView):
         user_details = UserDetails.of(request.user)
         old_team = user_details.current_team
 
-        user_details.current_team = invitation.team
-        user_details.is_cap = False
-        user_details.save()
-        invitation.delete()
+        active_games = self.get_active_games_of(invitation.team)
+        if active_games:
+            messages.error(request, u"Во время игры команды нельзя принимать приглашения")
+        else:
+            user_details.current_team = invitation.team
+            user_details.is_cap = False
+            user_details.save()
+            invitation.delete()
 
-        self.validate_team_cap(old_team)
-        self.validate_team_cap(user_details.current_team)
+            self.validate_team_cap(old_team)
+            self.validate_team_cap(user_details.current_team)
 
-        messages.success(request, u"Вы теперь в составе команды %s" % user_details.current_team.name)
+            messages.success(request, u"Вы теперь в составе команды %s" % user_details.current_team.name)
         return redirect(reverse("my_team"))
 
     def validate_team_cap(self, team):
@@ -164,3 +176,6 @@ class AcceptInvitationView(BaseTeamView):
             if team.members.all().exists():
                 new_cap = team.members.first()
                 new_cap.is_cap = True
+
+    def get_active_games_of(self, team):
+        return TeamInGame.objects.filter(team=team, game__status="started").count()

@@ -69,6 +69,9 @@ class Game(models.Model):
     author = models.ForeignKey(User, verbose_name=u"Автор игры", related_name="my_games")
     title = models.CharField(max_length=255, verbose_name=u"Название")
     content = RichTextField(verbose_name=u"Описание")
+    active = models.BooleanField(verbose_name=u"Игра доступна", default=False)
+    min_players = models.IntegerField(verbose_name=u"Минимальное кол-во игроков", default=0, null=True, blank=True)
+    max_players = models.IntegerField(verbose_name=u"Максимальное кол-во игроков", default=0, null=True, blank=True)
     starts_at = models.DateTimeField(verbose_name=u"Время начала")
     finishes_at = models.DateTimeField(verbose_name=u"Время конца", null=True, blank=True)
     finished = models.BooleanField(default=False, verbose_name=u"Закончен")
@@ -196,6 +199,7 @@ class LevelStat(models.Model):
 
 
 class Answer(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u"Время ответа")
     level_stat = models.ForeignKey(LevelStat, verbose_name=u"Уровень", related_name="answers", on_delete=models.CASCADE)
     answer = models.CharField(max_length=1000, verbose_name=u"Ответ")
     user = models.ForeignKey(User, verbose_name=u"Кто отправил")

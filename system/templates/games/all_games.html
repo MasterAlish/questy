@@ -7,6 +7,12 @@
 
 
 {% block content %}
+    {% if my_draft_games.count > 0 %}
+        <h1 class="ui ">Мои черновые игры</h1>
+        {% for game in my_draft_games %}
+            {% insert_game game request True %}
+        {% endfor %}
+    {% endif %}
     {% if games_in_progress.count > 0 %}
         <h1 class="ui ">Активные игры</h1>
         {% for game in games_in_progress %}

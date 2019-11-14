@@ -53,11 +53,11 @@ class HomeView(BaseView):
     template_name = "home.html"
 
     def dispatch(self, request, *args, **kwargs):
-        games_in_progress = Game.objects.filter(status="started")
-        games_in_future = Game.objects.filter(status="not_started")
+        games_in_progress = Game.objects.filter(active=True, status="started")
+        games_in_future = Game.objects.filter(active=True, status="not_started")
         six_hours_ago = timezone.now() - timedelta(hours=6)
         just_finished_games = Game.objects.filter(Q(status="finished") | Q(status="scoring")).filter(
-            finishes_at__gt=six_hours_ago)
+            finishes_at__gt=six_hours_ago, active=True)
         return render(request, self.template_name, {
             'games_in_progress': games_in_progress,
             'games_in_future': games_in_future,

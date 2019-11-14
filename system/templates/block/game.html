@@ -5,20 +5,31 @@
     <div style="clear: both;"></div>
     <hr>
     <div class="ui list">
+        {% if not game.active %}
+            <div class="ui red item">Игра не активна</div>
+        {% endif %}
         <div class="item"><b>Играем:</b> Командами</div>
         <div class="item"><b>Последовательность:</b> {{ game.get_sequence_display }}</div>
         <div class="item"><b>Начало игры:</b> {{ game.starts_at|date:"d.m.Y H:i" }}</div>
         <div class="item"><b>Времени осталось:</b> {{ game.starts_at|timeuntil }}</div>
+        {% if game.min_players or game.max_players %}
+            <div class="item"><b>Ограничение по игрокам:</b>
+                от {{ game.min_players|default_if_none:"1" }}
+                {% if game.max_players %}
+                    до {{ game.max_players }}
+                {% endif %} игроков в команде
+            </div>
+        {% endif %}
     </div>
     <hr>
-    {% if game.status == "not_started" %}
+    {% if game.active and game.status == "not_started" %}
         <form action="{% url 'take_part_in_game' game.id %}" method="post" class="item" style="display: inline-block;">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.path }}">
             <button class="ui mini basic orange button">Подать заявку на участие</button>
         </form>
     {% endif %}
-    {% if game.ready_to_start and not game.finished %}
+    {% if not game.active or game.ready_to_start and not game.finished %}
         <a href="{% url 'play_game' game.id %}" class="ui mini basic labeled green icon button">
             <i class="puzzle icon"></i>
             Перейти к игре
