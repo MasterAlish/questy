@@ -43,6 +43,7 @@ class GameAdmin(MyAdmin):
 
 class AnswerAdmin(MyAdmin):
     list_display = ["level_stat", "answer", "user", "right", "created_at"]
+    list_filter = ["user", "right", "level_stat__level", "level_stat__level__game"]
 
 admin.site.register(Permission)
 admin.site.register(Team)

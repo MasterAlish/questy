@@ -1,0 +1,2 @@
+nginx: nginx -c /etc/nginx/nginx.conf -g 'daemon off;'
+uwsgi: /usr/local/bin/uwsgi --ini /etc/uwsgi/uwsgi.ini

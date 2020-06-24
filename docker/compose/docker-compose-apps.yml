@@ -1,0 +1,33 @@
+version: '3.3'
+
+services:
+  postgres:
+    restart: always
+    image: postgres:9.6-alpine
+    container_name: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=questdb
+      - POSTGRES_USER=quest_user
+      - POSTGRES_PASSWORD=quest_pass
+    volumes:
+      - ~/postgres_data2:/var/lib/postgresql/data
+    networks:
+      - backend
+  questy:
+    image: questy:1
+    container_name: questy
+    restart: always
+    ports:
+      - 9077:8000
+    environment:
+      - DEBUG=True
+      - DB_NAME=questdb
+      - DB_USER=quest_user
+      - DB_PASS=quest_pass
+    networks:
+      - backend
+
+networks:
+  backend:
